@@ -1,12 +1,12 @@
 <?php
 
-namespace Tighten\Elm;
+namespace Tightenco\Elm;
 
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Class ElmProvider
- * @package Tighten\Elm
+ * Class ElmServiceProvider
+ * @package Tightenco\Elm
  */
 class ElmServiceProvider extends ServiceProvider
 {
@@ -27,6 +27,6 @@ class ElmServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        class_alias('Tighten\Elm\ElmFacade', 'Elm');
+        class_alias('Tightenco\Elm\ElmFacade', 'Elm');
     }
 }

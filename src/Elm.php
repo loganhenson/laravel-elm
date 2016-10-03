@@ -1,10 +1,10 @@
 <?php
 
-namespace Tighten\Elm;
+namespace Tightenco\Elm;
 
 /**
  * Class Elm
- * @package Laracasts\Utilities\Elm
+ * @package Tightenco\Elm
  */
 class Elm
 {

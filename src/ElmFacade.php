@@ -1,12 +1,12 @@
 <?php
 
-namespace Tighten\Elm;
+namespace Tightenco\Elm;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
  * Class ElmFacade
- * @package Laracasts\Utilities\JavaScript
+ * @package Tightenco\Elm
  */
 class ElmFacade extends Facade
 {

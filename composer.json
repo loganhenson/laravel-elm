@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Tighten\\Elm\\": "src/"
+            "Tightenco\\Elm\\": "src/"
         }
     }
 }
