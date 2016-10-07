@@ -10,6 +10,10 @@ use Illuminate\Support\ServiceProvider;
  */
 class ElmServiceProvider extends ServiceProvider
 {
+    protected $commands = [
+        'Tightenco\Elm\Commands\Create'
+    ];
+
     /**
      * Register the service provider.
      *
@@ -20,6 +24,7 @@ class ElmServiceProvider extends ServiceProvider
         $this->app->singleton('Elm', function ($app) {
             return new Elm;
         });
+
     }
 
     /**
