@@ -31,6 +31,8 @@ And add the service provider to your application.
 When this provider is booted, you'll gain access to a helpful `Elm` facade, which you may use in your controllers.
 
 ```php
+use Elm;
+...
 public function index()
 {
     return view('home', [
