@@ -2,6 +2,7 @@
 
 namespace Tightenco\Elm;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -11,7 +12,8 @@ use Illuminate\Support\ServiceProvider;
 class ElmServiceProvider extends ServiceProvider
 {
     protected $commands = [
-        'Tightenco\Elm\Commands\Create'
+        'Tightenco\Elm\Commands\Create',
+        'Tightenco\Elm\Commands\Install'
     ];
 
     /**
@@ -25,6 +27,7 @@ class ElmServiceProvider extends ServiceProvider
             return new Elm;
         });
 
+        $this->commands($this->commands);
     }
 
     /**
