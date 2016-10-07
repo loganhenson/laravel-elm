@@ -4,6 +4,7 @@ namespace Tightenco\Elm\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Artisan;
 
 /**
  * Class Create
@@ -47,10 +48,14 @@ class Create extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
+        if (!is_dir('resources/assets/elm')) {
+            $this->files->makeDirectory('resources/assets/elm/');
+        }
+
         $this->files->makeDirectory('resources/assets/elm/' . $this->argument('program'));
 
         $initialProgram = <<<EOT
@@ -60,6 +65,16 @@ main =
    div [] [ h1 [] [text "Hello, World!"] ]
 EOT;
 
-        return $this->files->put('resources/assets/elm/' . $this->argument('program') . '/Main.elm', $initialProgram);
+        $this->files->put('resources/assets/elm/' . $this->argument('program') . '/Main.elm', $initialProgram);
+
+        Artisan::call('elm:install', [
+            'program' => $this->argument('program'),
+            'package' => 'elm-lang/html'
+        ]);
+
+        Artisan::call('elm:install', [
+            'program' => $this->argument('program'),
+            'package' => 'evancz/elm-http'
+        ]);
     }
 }
