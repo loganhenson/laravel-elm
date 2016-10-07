@@ -61,6 +61,7 @@ class Create extends Command
         $initialProgram = <<<EOT
 import Html exposing (div, h1, text)
 
+main : Html.Html a
 main =
    div [] [ h1 [] [text "Hello, World!"] ]
 EOT;
