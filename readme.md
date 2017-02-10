@@ -4,7 +4,7 @@ So you want to render an elm program inside a laravel application?
 
 This package makes it easy.
 
-Recommended: `npm install --dev laravel-elm`
+Recommended: The partner Javascript library with the same name, `npm i --dev laravel-elm`
 
 ## Installation
 
