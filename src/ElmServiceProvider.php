@@ -12,8 +12,7 @@ use Illuminate\Support\ServiceProvider;
 class ElmServiceProvider extends ServiceProvider
 {
     protected $commands = [
-        'Tightenco\Elm\Commands\Create',
-        'Tightenco\Elm\Commands\Install'
+        'Tightenco\Elm\Commands\Create'
     ];
 
     /**

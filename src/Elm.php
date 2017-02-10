@@ -19,13 +19,19 @@ class Elm
 
         <div id="<?= $app_name ?>"></div>
 
-        <script src="/js/<?= $app_name ?>.js"></script>
-
         <script>
-            Elm.Main.embed(
+        window.addEventListener('load', function () {
+            <?php if (!empty($flags)) : ?>
+            Elm.<?= $app_name ?>.embed(
                 document.getElementById('<?= $app_name ?>'),
                 <?= json_encode($flags) ?>
             );
+            <?php else : ?>
+            Elm.<?= $app_name ?>.embed(
+                document.getElementById('<?= $app_name ?>')
+            );
+            <?php endif; ?>
+        });
         </script>
 
         <?php return ob_get_clean();

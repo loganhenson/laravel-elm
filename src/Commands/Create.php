@@ -52,13 +52,17 @@ class Create extends Command
      */
     public function handle()
     {
+        $program = studly_case($this->argument('program'));
+
         if (!is_dir('resources/assets/elm')) {
             $this->files->makeDirectory('resources/assets/elm/');
         }
 
-        $this->files->makeDirectory('resources/assets/elm/' . $this->argument('program'));
+        $this->files->makeDirectory('resources/assets/elm/' . $program);
 
         $initialProgram = <<<EOT
+module $program exposing (..)
+
 import Html exposing (div, h1, text)
 
 main : Html.Html a
@@ -66,16 +70,6 @@ main =
    div [] [ h1 [] [text "Hello, World!"] ]
 EOT;
 
-        $this->files->put('resources/assets/elm/' . $this->argument('program') . '/Main.elm', $initialProgram);
-
-        Artisan::call('elm:install', [
-            'program' => $this->argument('program'),
-            'package' => 'elm-lang/html'
-        ]);
-
-        Artisan::call('elm:install', [
-            'program' => $this->argument('program'),
-            'package' => 'evancz/elm-http'
-        ]);
+        $this->files->put("resources/assets/elm/$program/Main.elm", $initialProgram);
     }
 }

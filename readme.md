@@ -4,7 +4,7 @@ So you want to render an elm program inside a laravel application?
 
 This package makes it easy.
 
-Recommended: [laravel-elixir-elm](https://github.com/tightenco/laravel-elixir-elm)
+Recommended: [laravel-elm](https://github.com/loganhenson/laravel-elm)
 
 ## Installation
 
