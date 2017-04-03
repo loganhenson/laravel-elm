@@ -13,7 +13,7 @@ Begin by installing this package through Composer.
 ```js
 {
     "require": {
-		"tightenco/elm": "~1.0"
+		"tightenco/laravel-elm": "~1.0"
 	}
 }
 ```
