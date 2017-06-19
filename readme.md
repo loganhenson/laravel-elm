@@ -13,12 +13,12 @@ Begin by installing this package through Composer.
 ```js
 {
     "require": {
-		"tightenco/laravel-elm": "~1.0"
-	}
+        "tightenco/laravel-elm": "~1.0"
+    }
 }
 ```
 
-And add the service provider to your application.
+And add the service provider and facade alias to your application config.
 
 **config/app.php**
 ```
@@ -30,7 +30,15 @@ And add the service provider to your application.
 ...
 ```
 
-When this provider is booted, you'll gain access to a helpful `Elm` facade, which you may use in your controllers.
+```
+...
+'aliases' => [
+    '...',
+    'Elm' => Tightenco\Elm\ElmFacade::class,
+];
+```
+
+You may then use the helpful `Elm` facade in your controllers.
 
 ```php
 use Elm;
