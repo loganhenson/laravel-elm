@@ -34,6 +34,6 @@ class ElmServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        class_alias('Tightenco\Elm\ElmFacade', 'Elm');
+        //
     }
 }
