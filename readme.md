@@ -30,6 +30,14 @@ And add the service provider to your application.
 ...
 ```
 
+```
+...
+'aliases' => [
+    '...',
+    'Elm' => Tightenco\Elm\ElmFacade::class,
+];
+```
+
 When this provider is booted, you'll gain access to a helpful `Elm` facade, which you may use in your controllers.
 
 ```php
