@@ -23,11 +23,11 @@ class Create extends Command
     {
         $program = Str::studly($this->argument('program'));
 
-        if (! is_dir('resources/elm')) {
-            $this->files->makeDirectory('resources/elm/');
+        if (! is_dir(resource_path('elm'))) {
+            $this->files->makeDirectory(resource_path('elm/'));
         }
 
-        $this->files->makeDirectory('resources/elm/' . $program);
+        $this->files->makeDirectory(resource_path('elm/' . $program));
 
         $initialProgram = <<<EOT
 module {$program} exposing (..)
@@ -38,6 +38,6 @@ main =
   text "Hello, World!"
 EOT;
 
-        $this->files->put("resources/elm/{$program}/Main.elm", $initialProgram);
+        $this->files->put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
     }
 }
