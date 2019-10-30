@@ -14,44 +14,30 @@ Begin by installing this package through Composer.
 ```js
 {
     "require": {
-        "tightenco/laravel-elm": "~1.0"
+        "tightenco/laravel-elm": "~2.0"
     }
 }
 ```
 
-And add the service provider and facade alias to your application config.
-
-**config/app.php**
-```
-...
-'providers' => [
-    '...',
-    Tightenco\Elm\ElmServiceProvider::class
-];
-...
-```
-
-```
-...
-'aliases' => [
-    '...',
-    'Elm' => Tightenco\Elm\ElmFacade::class,
-];
-```
-
-You may then use the helpful `Elm` facade in your controllers.
+You may then use the `Elm` facade to hydrate your Elm apps.
 
 ```php
-use Elm;
+use Tightenco\Elm\Elm;
 ...
 public function index()
 {
     return view('home', [
-        'example' => Elm::make('example', [
+        'Example' => Elm::make('Example', [
             'name' => Auth::user()->name
         ])
     ]);
 }
+```
+
+And in the view:
+
+```php
+{!! $Example !!}
 ```
 
 ## License

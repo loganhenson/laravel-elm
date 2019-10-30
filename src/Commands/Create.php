@@ -23,22 +23,21 @@ class Create extends Command
     {
         $program = Str::studly($this->argument('program'));
 
-        if (! is_dir('resources/assets/elm')) {
-            $this->files->makeDirectory('resources/assets/elm/');
+        if (! is_dir('resources/elm')) {
+            $this->files->makeDirectory('resources/elm/');
         }
 
-        $this->files->makeDirectory('resources/assets/elm/' . $program);
+        $this->files->makeDirectory('resources/elm/' . $program);
 
         $initialProgram = <<<EOT
 module {$program} exposing (..)
 
-import Html exposing (div, h1, text)
+import Html exposing (text)
 
-main : Html.Html a
 main =
-   div [] [ h1 [] [text "Hello, World!"] ]
+  text "Hello, World!"
 EOT;
 
-        $this->files->put("resources/assets/elm/{$program}/Main.elm", $initialProgram);
+        $this->files->put("resources/elm/{$program}/Main.elm", $initialProgram);
     }
 }
