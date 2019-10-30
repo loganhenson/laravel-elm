@@ -24,7 +24,7 @@ class Create extends Command
         File::makeDirectory(resource_path('elm/' . $program));
 
         $initialProgram = <<<EOT
-module {$program} exposing (..)
+module {$program}.Main exposing (..)
 
 import Html exposing (text)
 
