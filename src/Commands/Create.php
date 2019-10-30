@@ -3,7 +3,7 @@
 namespace Tightenco\Elm\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class Create extends Command
@@ -12,22 +12,16 @@ class Create extends Command
     protected $signature = 'elm:create {program}';
     protected $description = 'Create Elm program';
 
-    public function __construct(Filesystem $files)
-    {
-        parent::__construct();
-
-        $this->files = $files;
-    }
-
     public function handle()
     {
+        $elmPath = resource_path('elm');
         $program = Str::studly($this->argument('program'));
 
-        if (! is_dir(resource_path('elm'))) {
-            $this->files->makeDirectory(resource_path('elm/'));
+        if (! File::isDirectory($elmPath)) {
+            File::makeDirectory($elmPath);
         }
 
-        $this->files->makeDirectory(resource_path('elm/' . $program));
+        File::makeDirectory(resource_path('elm/' . $program));
 
         $initialProgram = <<<EOT
 module {$program} exposing (..)
@@ -38,6 +32,6 @@ main =
   text "Hello, World!"
 EOT;
 
-        $this->files->put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
+        File::put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
     }
 }
