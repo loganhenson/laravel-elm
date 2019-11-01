@@ -31,16 +31,12 @@ class Create extends Command
 
     private function makeBasicProgram(string $program)
     {
-        ob_start();
-        require __DIR__ . '/../Fixtures/BasicProgram.elm';
-        return ob_get_clean();
+        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/BasicProgram.php'));
     }
 
     private function makeProgramWithFlags(string $program)
     {
-        ob_start();
-        require __DIR__ . '/../Fixtures/ProgramWithFlags.elm';
-        return ob_get_clean();
+        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/ProgramWithFlags.elm'));
     }
 
     private function ensureInitialized($elmPath)

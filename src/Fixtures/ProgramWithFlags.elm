@@ -1,4 +1,4 @@
-module {$program}.Main exposing (..)
+module PROGRAM.Main exposing (..)
 
 import Browser
 import Html exposing (text)
