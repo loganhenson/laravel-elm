@@ -4,7 +4,7 @@ So you want to render multiple elm programs inside a laravel application?
 
 This package makes it seamless.
 
-**Required**: The partner Javascript library with the same name, `npm i laravel-elm --only=dev`
+**Required**: The partner Javascript library with the same name, `npm i laravel-elm --save-dev`
 > https://github.com/loganhenson/laravel-elm
 
 ## Add the elm runner to your `webpack.mix.js` e.g.:
