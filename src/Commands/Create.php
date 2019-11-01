@@ -20,10 +20,6 @@ class Create extends Command
 
         $program = Str::studly($this->argument('program'));
 
-        if (! File::isDirectory($elmPath)) {
-            File::makeDirectory($elmPath);
-        }
-
         File::makeDirectory(resource_path('elm/' . $program));
 
         $initialProgram = <<<EOT
@@ -40,6 +36,10 @@ EOT;
 
     private function ensureInitialized($elmPath)
     {
+        if (! File::isDirectory($elmPath)) {
+            File::makeDirectory($elmPath);
+        }
+
         $elmJsonPath = $elmPath . '/elm.json';
 
         if (! File::isFile($elmJsonPath)) {
