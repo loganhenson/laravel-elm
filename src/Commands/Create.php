@@ -43,7 +43,7 @@ EOT;
         $elmJsonPath = $elmPath . '/elm.json';
 
         if (! File::isFile($elmJsonPath)) {
-            File::copy($elmJsonPath, __DIR__ . '/../Fixtures/elm.json');
+            File::copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);
         }
     }
 }
