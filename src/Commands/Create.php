@@ -31,7 +31,7 @@ class Create extends Command
 
     private function makeBasicProgram(string $program)
     {
-        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/BasicProgram.php'));
+        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/BasicProgram.elm'));
     }
 
     private function makeProgramWithFlags(string $program)
