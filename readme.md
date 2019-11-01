@@ -25,7 +25,7 @@ composer require tightenco/laravel-elm
 
 ## Create your first Elm application
 ```
-php artisan elm:create Hello
+php artisan elm:create Example
 ```
 
 ## Watch your elm files just like you would everything else
@@ -41,7 +41,7 @@ use Tightenco\Elm\Elm;
 public function index()
 {
     return view('home', [
-        'Hello' => Elm::make('Hello'),
+        'Example' => Elm::make('Example'),
     ]);
 }
 ```
@@ -49,12 +49,13 @@ public function index()
 And then render it in your view:
 
 ```php
-{!! $Hello !!}
+{!! $Example !!}
 ```
 
 > Hello, World!
 
 ## You can even pass flags to your Elm application
+> You can generate a program with flags via `php artisan elm:create Example --with-flags`
 
 ```php
 use Tightenco\Elm\Elm;
@@ -62,9 +63,11 @@ use Tightenco\Elm\Elm;
 public function index()
 {
     return view('home', [
-        'Hello' => Elm::make('Hello', [
-            'csrfToken' => csrf_token(),
-            'user' => auth()->user(),
+        'Example' => Elm::make('Example', [
+            'value' => 'Hello, World!'
+            // You can pass anything you might need:
+            // 'csrfToken' => csrf_token(),
+            // 'user' => auth()->user(),
         ]),
     ]);
 }
