@@ -15,6 +15,9 @@ class Create extends Command
     public function handle()
     {
         $elmPath = resource_path('elm');
+
+        $this->ensureInitialized($elmPath);
+
         $program = Str::studly($this->argument('program'));
 
         if (! File::isDirectory($elmPath)) {
@@ -33,5 +36,14 @@ main =
 EOT;
 
         File::put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
+    }
+
+    private function ensureInitialized($elmPath)
+    {
+        $elmJsonPath = $elmPath . '/elm.json';
+
+        if (! File::isFile($elmJsonPath)) {
+            File::put($elmPath, __DIR__ . '/../Fixtures/elm.json');
+        }
     }
 }

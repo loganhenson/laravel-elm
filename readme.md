@@ -1,25 +1,39 @@
-# Render your Elm programs in Laravel
+# Render your Elm programs from Laravel
 
-So you want to render an elm program inside a laravel application?
+So you want to render multiple elm programs inside a laravel application?
 
-This package makes it easy.
+This package makes it seamless.
 
-Recommended: The partner Javascript library with the same name, `npm i --dev laravel-elm`
+**Required**: The partner Javascript library with the same name, `npm i --dev laravel-elm`
 > https://github.com/loganhenson/laravel-elm
+
+## Add the elm runner to your `webpack.mix.js` e.g.:
+```
+const mix = require('laravel-mix');
+const elm = require('laravel-elm');
+
+mix.js('resources/js/app.js', 'public/js')
+    .sass('resources/sass/app.scss', 'public/css')
+    .then(elm);
+```
 
 ## Installation
 
-Begin by installing this package through Composer.
-
-```js
-{
-    "require": {
-        "tightenco/laravel-elm": "~2.0"
-    }
-}
+```
+composer require tightenco/laravel-elm
 ```
 
-You may then use the `Elm` facade to hydrate your Elm apps.
+## Create your first Elm application
+```
+php artisan elm:create Hello
+```
+
+## Watch your elm files just like you would everything else
+```
+npm run watch
+```
+
+You may then use the `Elm` facade to view your Elm apps.
 
 ```php
 use Tightenco\Elm\Elm;
@@ -27,17 +41,33 @@ use Tightenco\Elm\Elm;
 public function index()
 {
     return view('home', [
-        'Example' => Elm::make('Example', [
-            'name' => Auth::user()->name
-        ])
+        'Hello' => Elm::make('Hello'),
     ]);
 }
 ```
 
-And in the view:
+And then render it in your view:
 
 ```php
-{!! $Example !!}
+{!! $Hello !!}
+```
+
+> Hello, World!
+
+## You can even pass flags to your Elm application
+
+```php
+use Tightenco\Elm\Elm;
+...
+public function index()
+{
+    return view('home', [
+        'Hello' => Elm::make('Hello', [
+            'csrfToken' => csrf_token(),
+            'user' => auth()->user(),
+        ]),
+    ]);
+}
 ```
 
 ## License
