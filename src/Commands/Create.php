@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class Create extends Command
 {
     protected $files;
-    protected $signature = 'elm:create {program}';
+    protected $signature = 'elm:create {program} {--with-flags}';
     protected $description = 'Create Elm program';
 
     public function handle()
@@ -22,16 +22,25 @@ class Create extends Command
 
         File::makeDirectory(resource_path('elm/' . $program));
 
-        $initialProgram = <<<EOT
-module {$program}.Main exposing (..)
-
-import Html exposing (text)
-
-main =
-  text "Hello, World!"
-EOT;
+        $initialProgram = $this->option('with-flags')
+            ? $this->makeProgramWithFlags($program)
+            : $this->makeBasicProgram($program);
 
         File::put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
+    }
+
+    private function makeBasicProgram(string $program)
+    {
+        ob_start();
+        require __DIR__ . '/../Fixtures/BasicProgram.elm';
+        return ob_get_clean();
+    }
+
+    private function makeProgramWithFlags(string $program)
+    {
+        ob_start();
+        require __DIR__ . '/../Fixtures/ProgramWithFlags.elm';
+        return ob_get_clean();
     }
 
     private function ensureInitialized($elmPath)
