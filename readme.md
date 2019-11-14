@@ -1,3 +1,5 @@
+![Laravel Elm logo](https://raw.githubusercontent.com/tightenco/laravel-elm/master/laravel-elm-banner.png)
+
 # Render your Elm programs from Laravel
 
 So you want to render multiple elm programs inside a laravel application?
