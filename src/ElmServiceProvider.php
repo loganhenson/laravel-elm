@@ -2,6 +2,7 @@
 
 namespace Tightenco\Elm;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
 class ElmServiceProvider extends ServiceProvider
@@ -21,6 +22,6 @@ class ElmServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        //
+        $this->app[Kernel::class]->pushMiddleware(Middleware::class);
     }
 }

@@ -2,34 +2,19 @@
 
 namespace Tightenco\Elm;
 
-class Elm
+use Illuminate\Support\Facades\Facade;
+
+/**
+ * @method static \Tightenco\Elm\Response render($component, $props = [])
+ * @method static void share($key, $value = null)
+ * @method static array getShared($key = null)
+ *
+ * @see \Tightenco\Elm\ElmFacade
+ */
+class Elm extends Facade
 {
-    /**
-     * Bind the given array of variables to the elm program,
-     * render the script include,
-     * and return the html.
-     */
-    public static function make($app_name, $flags = [])
+    protected static function getFacadeAccessor()
     {
-        ob_start(); ?>
-
-        <div id="<?= $app_name ?>"></div>
-
-        <script>
-            window.addEventListener('load', function () {
-                <?php if (! empty($flags)) : ?>
-                Elm.<?= $app_name ?>.Main.init( {
-                    node: document.getElementById( '<?= $app_name ?>' ),
-                    flags: <?= json_encode( $flags ) ?>
-                });
-                <?php else : ?>
-                Elm.<?= $app_name ?>.Main.init({
-                    node: document.getElementById('<?= $app_name ?>')
-                });
-                <?php endif; ?>
-            });
-        </script>
-
-        <?php return ob_get_clean();
+        return ElmFacade::class;
     }
 }
