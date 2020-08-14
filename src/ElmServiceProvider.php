@@ -3,6 +3,7 @@
 namespace Tightenco\Elm;
 
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class ElmServiceProvider extends ServiceProvider
@@ -23,6 +24,10 @@ class ElmServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        Blade::directive('elm', function () {
+            return '{!! $elm !!}';
+        });
+
         $this->app[Kernel::class]->pushMiddleware(Middleware::class);
     }
 }

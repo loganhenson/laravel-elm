@@ -1,8 +1,10 @@
 ![Laravel Elm logo](https://raw.githubusercontent.com/tightenco/laravel-elm/master/laravel-elm-banner.png)
 
-# Render your Elm programs from Laravel
+# A Platform for Elm on Laravel 
 
-So you want to render multiple elm programs inside a laravel application?
+Tired of the paradox of choice and constant churn on the frontend?
+
+Want a stable and opinionated platform to build on?
 
 This package makes it seamless.
 
@@ -14,8 +16,9 @@ This package makes it seamless.
 const mix = require('laravel-mix');
 const elm = require('laravel-elm');
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css')
+mix
+    //.js('resources/js/app.js', 'public/js')
+    //.sass('resources/sass/app.scss', 'public/css')
     .then(elm);
 ```
 
@@ -25,7 +28,7 @@ mix.js('resources/js/app.js', 'public/js')
 composer require tightenco/laravel-elm
 ```
 
-## Create your first Elm application
+## Create your first Elm Page
 ```
 php artisan elm:create Example
 ```
@@ -35,44 +38,65 @@ php artisan elm:create Example
 npm run watch
 ```
 
-You may then use the `Elm` facade to view your Elm apps.
+You may then use the `Elm` facade to render your Elm Pages.
 
 ```php
 use Tightenco\Elm\Elm;
 ...
 public function index()
 {
-    return view('home', [
-        'Example' => Elm::make('Example'),
-    ]);
+    return Elm::render('Example');
 }
 ```
 
-And then render it in your view:
+And then render it in your `app.blade.php` inside your `<body>`:
 
 ```php
-{!! $Example !!}
+...
+<body>
+@elm
+<script src="/js/elm.js"></script>
+{{--  <script src="{{ mix('/js/elm.js') }}"></script> --}}
+</body>
+...
 ```
 
-> Hello, World!
+> Hello, Example!
 
-## You can even pass flags to your Elm application
-> You can generate a program with flags via `php artisan elm:create Example --with-flags`
+## You can even pass props to your Elm Pages
 
 ```php
 use Tightenco\Elm\Elm;
 ...
 public function index()
 {
-    return view('home', [
-        'Example' => Elm::make('Example', [
+    return Elm::render('Example', [
             'value' => 'Hello, World!'
             // You can pass anything you might need:
-            // 'csrfToken' => csrf_token(),
             // 'user' => auth()->user(),
         ]),
     ]);
 }
+```
+
+## Or share values with all your Elm Pages
+
+`AppServiceProvider.php`
+```php
+use Tightenco\Elm\Elm;
+...
+    public function boot()
+    {
+        ...
+
+        Elm::share('user', function () {
+            return auth()->user() ? [
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+            ] : null;
+        });
+    }
+...
 ```
 
 ## License

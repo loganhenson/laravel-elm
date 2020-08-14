@@ -39,7 +39,7 @@ class Response implements Responsable
             ]);
         }
 
-        return ResponseFactory::view('app', $this->viewData + ['page' => $this->make($props)]);
+        return ResponseFactory::view('app', $this->viewData + ['elm' => $this->make($props)]);
     }
 
     /**

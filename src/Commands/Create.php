@@ -9,8 +9,8 @@ use Illuminate\Support\Str;
 class Create extends Command
 {
     protected $files;
-    protected $signature = 'elm:create {program} {--with-flags}';
-    protected $description = 'Create Elm program';
+    protected $signature = 'elm:create {page}';
+    protected $description = 'Create Elm Page';
 
     public function handle()
     {
@@ -18,25 +18,16 @@ class Create extends Command
 
         $this->ensureInitialized($elmPath);
 
-        $program = Str::studly($this->argument('program'));
+        $page = Str::studly($this->argument('page'));
 
-        File::makeDirectory(resource_path('elm/' . $program));
+        File::makeDirectory(resource_path('elm/' . $page));
 
-        $initialProgram = $this->option('with-flags')
-            ? $this->makeProgramWithFlags($program)
-            : $this->makeBasicProgram($program);
-
-        File::put(resource_path("elm/{$program}/Main.elm"), $initialProgram);
+        File::put(resource_path("elm/{$page}/Main.elm"), $this->makePage($page));
     }
 
-    private function makeBasicProgram(string $program)
+    private function makePage(string $page)
     {
-        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/BasicProgram.elm'));
-    }
-
-    private function makeProgramWithFlags(string $program)
-    {
-        return str_replace('PROGRAM', $program, File::get(__DIR__ . '/../Fixtures/ProgramWithFlags.elm'));
+        return str_replace('PAGE', $page, File::get(__DIR__ . '/../Fixtures/Main.elm'));
     }
 
     private function ensureInitialized($elmPath)
