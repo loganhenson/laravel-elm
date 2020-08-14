@@ -3,16 +3,18 @@
 namespace Tightenco\Elm;
 
 use Closure;
+use Illuminate\Support\Arr;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 
 class Response implements Responsable
 {
-    protected $page;
-    protected $flags;
-    protected $viewData = [];
+    protected string $page;
+    protected array $flags;
+    protected array $viewData = [];
 
     public function __construct(string $page, array $flags)
     {
@@ -40,6 +42,11 @@ class Response implements Responsable
         return ResponseFactory::view('app', $this->viewData + ['page' => $this->make($props)]);
     }
 
+    /**
+     * Bind the given array of variables to the elm program,
+     * render the script include,
+     * and return the html.
+     */
     public function make(array $props)
     {
         ob_start(); ?>

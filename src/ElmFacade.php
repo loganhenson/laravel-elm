@@ -2,7 +2,9 @@
 
 namespace Tightenco\Elm;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Facade;
 
 class ElmFacade
 {

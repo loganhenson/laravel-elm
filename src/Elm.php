@@ -2,6 +2,7 @@
 
 namespace Tightenco\Elm;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Facade;
 
 /**
