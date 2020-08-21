@@ -41,7 +41,7 @@ stateFromProps props =
     {}
 
 
-main : Program Value { props : Result Error Props, state : Maybe State } Msg
+main : Program Value (Result Error Model) Msg
 main =
     LaravelElm.page
         { decodeProps = decodeProps
