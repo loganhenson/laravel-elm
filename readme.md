@@ -99,6 +99,18 @@ use Tightenco\Elm\Elm;
 ...
 ```
 
+## Testing
+
+Just add this to your tests/TestCase.php setUp method.
+```php
+$this->withHeaders(['X-Laravel-Elm' => true]);
+```
+
+Now you can test everything via normal Laravel json assertion methods!
+```php
+$this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
+```
+
 ## License
 
 [View the license](https://github.com/tightenco/laravel-elm/blob/master/LICENSE) for this repo.
