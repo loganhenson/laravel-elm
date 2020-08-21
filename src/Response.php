@@ -3,35 +3,33 @@
 namespace Tightenco\Elm;
 
 use Closure;
-use Illuminate\Support\Arr;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 
 class Response implements Responsable
 {
     protected string $page;
-    protected array $flags;
+    protected array $props;
     protected array $viewData = [];
 
-    public function __construct(string $page, array $flags)
+    public function __construct(string $page, array $props)
     {
         $this->page = $page;
-        $this->flags = $flags;
+        $this->props = $props;
     }
 
     public function toResponse($request)
     {
         $props = array_map(function ($prop) {
             return $prop instanceof Closure ? App::call($prop) : $prop;
-        }, $this->flags);
+        }, $this->props);
 
         if ($request->header('X-Laravel-Elm')) {
             return new JsonResponse([
                 'page' => $this->page,
-                'flags' => $props,
+                'props' => $props,
                 'url' => $request->getRequestUri(),
             ], 200, [
                 'Vary' => 'Accept',
@@ -59,17 +57,17 @@ class Response implements Responsable
               url: null,
               page: null,
               modal: null,
-              flags: null,
+              props: null,
             }
 
-            function sendNewProps(flags) {
-              console.log('new props set: ', flags)
-              current.flags = flags;
-              current.app.ports.receiveNewProps.send(flags)
+            function sendNewProps(props) {
+              console.log('new props set: ', props)
+              current.props = props;
+              current.app.ports.receiveNewProps.send(props)
             }
 
-            function setNewPage(url, page, flags) {
-              console.log('new page set: ', url, page, flags)
+            function setNewPage(url, page, props) {
+              console.log('new page set: ', url, page, props)
 
               current.page = page
               if (current.element) {
@@ -84,31 +82,31 @@ class Response implements Responsable
 
               current.app = Elm[page].Main.init({
                 node: current.element,
-                flags: flags,
+                flags: props,
               })
 
               window.dispatchEvent(new CustomEvent('elm-ready'))
             }
 
-            function updateHistoryAndUrl(url, page, flags) {
+            function updateHistoryAndUrl(url, page, props) {
               current.url = url
               if (url === window.location.pathname + window.location.search) {
-                window.history.replaceState({ url: url, page: page, flags: flags }, '', url)
+                window.history.replaceState({ url: url, page: page, props: props }, '', url)
               } else {
-                window.history.pushState({ url: url, page: page, flags: flags }, '', url)
+                window.history.pushState({ url: url, page: page, props: props }, '', url)
               }
             }
 
-            function setPage(url, page, flags) {
-              current.flags = flags;
+            function setPage(url, page, props) {
+              current.props = props;
 
               if (current.page === page) {
-                sendNewProps(flags)
+                sendNewProps(props)
               } else {
-                setNewPage(url, page, flags)
+                setNewPage(url, page, props)
               }
 
-              updateHistoryAndUrl(url, page, flags)
+              updateHistoryAndUrl(url, page, props)
             }
 
             function createAppElement() {
@@ -215,11 +213,11 @@ class Response implements Responsable
 
               // Handle flashed errors without a full page revisit (optimization).
               if (result.headers.has('x-laravel-elm-errors')) {
-                sendNewProps({...current.flags, errors: jsonResult.errors})
+                sendNewProps({...current.props, errors: jsonResult.errors})
                 return
               }
 
-              setPage(jsonResult.url, jsonResult.page, jsonResult.flags)
+              setPage(jsonResult.url, jsonResult.page, jsonResult.props)
             }
 
             window.addEventListener('elm-ready', () => {
@@ -243,7 +241,7 @@ class Response implements Responsable
 
             window.addEventListener('popstate', async (e) => {
               if (e.state) {
-                await setPage(e.state.url, e.state.page, e.state.flags)
+                await setPage(e.state.url, e.state.page, e.state.props)
               }
             })
 
