@@ -12,15 +12,24 @@ This package makes it seamless.
 > https://github.com/loganhenson/laravel-elm
 
 ## Add the elm runner to your `webpack.mix.js` e.g.:
+> Production Example
 ```
-const mix = require('laravel-mix');
-const elm = require('laravel-elm');
+const mix = require("laravel-mix");
+const elm = require("laravel-elm");
 
-mix
-    //.js('resources/js/app.js', 'public/js')
-    //.sass('resources/sass/app.scss', 'public/css')
-    .then(elm);
+mix.extend("elm", elm);
+
+mix.js("resources/js/app.js", "public/js")
+    .elm()
+    .combine(["public/js/app.js", "public/js/elm.js"], "public/js/all.js")
+    .postCss("resources/css/main.css", "public/css", [require("tailwindcss")]);
+
+if (mix.inProduction()) {
+    mix.minify("public/js/all.js").version();
+}
 ```
+
+> Note that running `npm run production` with both optimize (via the elm compiler) and minify (via `mix`, if you use the above setup or similar)
 
 ## Installation
 
@@ -51,12 +60,15 @@ public function index()
 
 And then render it in your `app.blade.php` inside your `<body>`:
 
-```php
+```blade
 ...
+<head>
+    ...
+    <link href="{{ mix('/css/main.css') }}" rel="stylesheet">
+</head>
 <body>
 @elm
-<script src="/js/elm.js"></script>
-{{--  <script src="{{ mix('/js/elm.js') }}"></script> --}}
+<script src="{{ mix('/js/all.js') }}"></script>
 </body>
 ...
 ```
@@ -71,9 +83,9 @@ use Tightenco\Elm\Elm;
 public function index()
 {
     return Elm::render('Example', [
-            'value' => 'Hello, World!'
+            'value' => 'Hello, World!',
             // You can pass anything you might need:
-            // 'user' => auth()->user(),
+             'user' => auth()->user(),
         ]),
     ]);
 }
