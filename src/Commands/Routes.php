@@ -5,6 +5,7 @@ namespace Tightenco\Elm\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\File;
+use Tightenco\Elm\Concerns\EnsureElmInitialized;
 
 class Routes extends Command
 {
@@ -12,9 +13,13 @@ class Routes extends Command
     protected $signature = 'elm:routes';
     protected $description = 'Publish routes for elm';
 
+    use EnsureElmInitialized;
+
     public function handle()
     {
-        File::put(resource_path("elm/Routes.elm"), $this->makeRoutes());
+        $this->ensureInitialized();
+
+        File::put(resource_path("elm/laravel-elm-stuff/Routes.elm"), $this->makeRoutes());
     }
 
     private function normalizeRouteName(string $name)

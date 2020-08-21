@@ -1,6 +1,6 @@
 module PAGE.Main exposing (..)
 
-import Core
+import LaravelElm
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
@@ -36,19 +36,19 @@ decodeProps =
         |> required "errors" (dict (list string))
 
 
-initialState : Props -> State
-initialState =
-    \_ -> {}
+stateFromProps : Props -> State
+stateFromProps props =
+    {}
 
 
 main : Program Value { props : Result Error Props, state : Maybe State } Msg
 main =
-    Core.page
+    LaravelElm.page
         { decodeProps = decodeProps
-        , initialState = initialState
+        , stateFromProps = stateFromProps
         , update = update
         , view = view
-        , subscriptions = \_ -> Core.receiveNewProps NewProps
+        , subscriptions = \_ -> LaravelElm.receiveNewProps NewProps
         }
 
 
@@ -56,7 +56,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
     case msg of
         NewProps newProps ->
-            ( { props = Core.handleNewProps decodeProps props newProps, state = state }, Cmd.none )
+            ( { props =
+                    LaravelElm.handleNewProps
+                        { decodeProps = decodeProps
+                        , previousProps = props
+                        , newProps = newProps
+                        }
+              , state = state
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg

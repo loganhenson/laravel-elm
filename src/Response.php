@@ -59,13 +59,18 @@ class Response implements Responsable
               url: null,
               page: null,
               modal: null,
+              flags: null,
             }
 
             function sendNewProps(flags) {
+              console.log('new props set: ', flags)
+              current.flags = flags;
               current.app.ports.receiveNewProps.send(flags)
             }
 
             function setNewPage(url, page, flags) {
+              console.log('new page set: ', url, page, flags)
+
               current.page = page
               if (current.element) {
                 current.element.remove()
@@ -83,7 +88,9 @@ class Response implements Responsable
               })
 
               window.dispatchEvent(new CustomEvent('elm-ready'))
+            }
 
+            function updateHistoryAndUrl(url, page, flags) {
               current.url = url
               if (url === window.location.pathname + window.location.search) {
                 window.history.replaceState({ url: url, page: page, flags: flags }, '', url)
@@ -93,13 +100,15 @@ class Response implements Responsable
             }
 
             function setPage(url, page, flags) {
+              current.flags = flags;
+
               if (current.page === page) {
                 sendNewProps(flags)
-                console.log('new props set: ', flags)
               } else {
                 setNewPage(url, page, flags)
-                console.log('new page set: ', page, flags)
               }
+
+              updateHistoryAndUrl(url, page, flags)
             }
 
             function createAppElement() {
@@ -157,6 +166,26 @@ class Response implements Responsable
               document.addEventListener('keydown', escapeHandler)
             }
 
+            function buildFormData(formData, data, parentKey) {
+              if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File) && !(data instanceof Blob)) {
+                Object.keys(data).forEach(key => {
+                  buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+                });
+              } else {
+                const value = data == null ? '' : data;
+
+                formData.append(parentKey, value);
+              }
+            }
+
+            function jsonToFormData(data) {
+              const formData = new FormData();
+
+              buildFormData(formData, data);
+
+              return formData;
+            }
+
             async function visit(url, { method = 'get', data = {} } = {}) {
               let result
               const headers = {
@@ -168,12 +197,10 @@ class Response implements Responsable
               if (method === 'get') {
                 result = await fetch(url, { headers })
               } else {
-                const formData = new FormData()
-                Object.keys(data).forEach(key => formData.append(key, data[key]))
                 result = await fetch(url, {
                   method,
                   headers,
-                  body: formData,
+                  body: jsonToFormData(data),
                 })
               }
 
@@ -183,7 +210,15 @@ class Response implements Responsable
                 return
               }
 
+              // Assumed to be a json response at this point.
               const jsonResult = await result.json()
+
+              // Handle flashed errors without a full page revisit (optimization).
+              if (result.headers.has('x-laravel-elm-errors')) {
+                sendNewProps({...current.flags, errors: jsonResult.errors})
+                return
+              }
+
               setPage(jsonResult.url, jsonResult.page, jsonResult.flags)
             }
 
@@ -193,6 +228,11 @@ class Response implements Responsable
               })
 
               current.app.ports.post.subscribe(({ url, data }) => {
+                visit(url, { method: 'POST', data })
+              })
+
+              current.app.ports.patch.subscribe(({ url, data }) => {
+                data._method = 'PATCH';
                 visit(url, { method: 'POST', data })
               })
 
@@ -208,7 +248,7 @@ class Response implements Responsable
             })
 
             window.addEventListener('load', () => {
-              setPage(window.location.pathname, "<?= $this->page ?>", <?= json_encode($props) ?>)
+              setPage(window.location.pathname + window.location.search, "<?= $this->page ?>", <?= json_encode($props) ?>)
             })
           })()
         </script>

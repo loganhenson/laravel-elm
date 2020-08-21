@@ -28,6 +28,15 @@ class ElmServiceProvider extends ServiceProvider
             return '{!! $elm !!}';
         });
 
+        Elm::share('errors', function () {
+            return session()->has('errors')
+                ? session()
+                    ->get('errors')
+                    ->getBag('default')
+                    ->getMessages()
+                : (object)[];
+        });
+
         $this->app[Kernel::class]->pushMiddleware(Middleware::class);
     }
 }
