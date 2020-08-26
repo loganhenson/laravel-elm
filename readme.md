@@ -24,9 +24,7 @@ mix.js("resources/js/app.js", "public/js")
     .postCss("resources/css/main.css", "public/css", [require("tailwindcss")]);
 
 if (mix.inProduction()) {
-    mix.minify("public/js/app.js")
-        .minify("public/js/elm.js")
-        .version(["public/js/elm.js"]);
+    mix.minify("public/js/elm.js").version(["public/js/elm.min.js"]);
 }
 ```
 
@@ -68,7 +66,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
     <link href="{{ mix('/css/main.css') }}" rel="stylesheet">
 </head>
 <body>
-@elm
+@elm  {{-- This includes the appropriate elm.js script tag --}}
 <script src="{{ mix('/js/app.js') }}"></script>
 </body>
 ...
