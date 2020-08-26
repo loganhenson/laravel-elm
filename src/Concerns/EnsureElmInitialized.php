@@ -19,6 +19,11 @@ trait EnsureElmInitialized
             File::makeDirectory($laravelElmStuffPath);
         }
 
+        $laravelElmSrcPath = $elmPath . '/src';
+        if (! File::isDirectory($laravelElmSrcPath)) {
+            File::makeDirectory($laravelElmSrcPath);
+        }
+
         $elmJsonPath = $elmPath . '/elm.json';
         if (! File::isFile($elmJsonPath)) {
             File::copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);

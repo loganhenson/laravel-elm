@@ -4,7 +4,7 @@ import LaravelElm
 import Dict exposing (Dict)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder, Error, Value, dict, list, string, succeed)
+import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 
 
@@ -56,12 +56,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
     case msg of
         NewProps newProps ->
-            ( { props =
-                    LaravelElm.handleNewProps
-                        { decodeProps = decodeProps
-                        , previousProps = props
-                        , newProps = newProps
-                        }
+            ( { props = Result.withDefault props <| decodeValue decodeProps newProps
               , state = state
               }
             , Cmd.none
