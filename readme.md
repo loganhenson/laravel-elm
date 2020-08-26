@@ -21,11 +21,12 @@ mix.extend("elm", elm);
 
 mix.js("resources/js/app.js", "public/js")
     .elm()
-    .combine(["public/js/app.js", "public/js/elm.js"], "public/js/all.js")
     .postCss("resources/css/main.css", "public/css", [require("tailwindcss")]);
 
 if (mix.inProduction()) {
-    mix.minify("public/js/all.js").version();
+    mix.minify("public/js/app.js")
+        .minify("public/js/elm.js")
+        .version(["public/js/elm.js"]);
 }
 ```
 
@@ -68,7 +69,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
 </head>
 <body>
 @elm
-<script src="{{ mix('/js/all.js') }}"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
 </body>
 ...
 ```

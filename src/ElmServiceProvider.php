@@ -25,7 +25,13 @@ class ElmServiceProvider extends ServiceProvider
     public function boot()
     {
         Blade::directive('elm', function () {
-            return '{!! $elm !!}';
+            try {
+                $path = mix('/js/elm.js');
+            } catch (\Exception $e) {
+                $path = '/js/elm.js';
+            }
+
+            return "<script src=\"{$path}\"></script>" . '{!! $elm !!}';
         });
 
         Elm::share('errors', function () {
