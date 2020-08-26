@@ -26,7 +26,7 @@ class ElmServiceProvider extends ServiceProvider
     {
         Blade::directive('elm', function () {
             try {
-                $path = mix('/js/elm.js');
+                $path = mix('/js/elm.min.js');
             } catch (\Exception $e) {
                 $path = '/js/elm.js';
             }
