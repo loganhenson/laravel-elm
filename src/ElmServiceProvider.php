@@ -11,6 +11,7 @@ class ElmServiceProvider extends ServiceProvider
     protected $commands = [
         'Tightenco\Elm\Commands\Create',
         'Tightenco\Elm\Commands\Routes',
+        'Tightenco\Elm\Commands\PWA',
     ];
 
     public function register()

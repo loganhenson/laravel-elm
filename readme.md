@@ -28,8 +28,6 @@ if (mix.inProduction()) {
 }
 ```
 
-> Note that running `npm run production` with both optimize (via the elm compiler) and minify (via `mix`, if you use the above setup or similar)
-
 ## Installation
 
 ```
@@ -108,6 +106,18 @@ use Tightenco\Elm\Elm;
         });
     }
 ...
+```
+
+## Updating Assets
+> Elm uses a service worker to ensure the latest assets are used. Add the `php artisan elm:pwa` to your "prod" command to ensure it gets the latest versions of you assets.
+```json
+{
+  "scripts": {
+    ...,
+    "prod": "npm run production;php artisan elm:pwa",
+    ...,
+  }
+}
 ```
 
 ## Testing

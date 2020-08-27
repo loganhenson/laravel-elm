@@ -10,12 +10,16 @@ use Illuminate\Support\Facades\Response as ResponseFactory;
 
 class Response implements Responsable
 {
+    protected ?string $version;
     protected string $page;
     protected array $props;
     protected array $viewData = [];
 
     public function __construct(string $page, array $props)
     {
+        $manifestPath = public_path('mix-manifest.json');
+
+        $this->version = file_exists($manifestPath) ? md5_file($manifestPath) : null;
         $this->page = $page;
         $this->props = $props;
     }
@@ -31,6 +35,7 @@ class Response implements Responsable
                 'page' => $this->page,
                 'props' => $props,
                 'url' => $request->getRequestUri(),
+                'version' => $this->version,
             ], 200, [
                 'Vary' => 'Accept',
                 'X-Laravel-Elm' => 'true',
@@ -52,6 +57,7 @@ class Response implements Responsable
         <script>
           (() => {
             let current = {
+              version: <?= $this->version ? "'{$this->version}'" : 'null' ?>,
               element: null,
               app: null,
               url: null,
@@ -61,14 +67,11 @@ class Response implements Responsable
             }
 
             function sendNewProps(props) {
-              console.log('new props set: ', props)
               current.props = props;
               current.app.ports.receiveNewProps.send(props)
             }
 
             function setNewPage(url, page, props) {
-              console.log('new page set: ', url, page, props)
-
               current.page = page
               if (current.element) {
                 current.element.remove()
@@ -76,7 +79,7 @@ class Response implements Responsable
               current.element = createAppElement()
 
               if (!Elm.hasOwnProperty(page)) {
-                console.log('No Elm page found named: ' + page)
+                console.warn('No Elm page found named: ' + page)
                 return
               }
 
@@ -211,6 +214,10 @@ class Response implements Responsable
               // Assumed to be a json response at this point.
               const jsonResult = await result.json()
 
+              if (current.version !== jsonResult.version) {
+                  window.dispatchEvent(new CustomEvent('elm-update-found'))
+              }
+
               // Handle flashed errors without a full page revisit (optimization).
               if (result.headers.has('x-laravel-elm-errors')) {
                 sendNewProps({...current.props, errors: jsonResult.errors})
@@ -250,6 +257,25 @@ class Response implements Responsable
             })
           })()
         </script>
+
+        <?php if($this->version): ?>
+        <script>
+            // Register service worker, if supported, after the load event (to deprioritize it after lazy imports).
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js').then(function (registration) {
+                        window.addEventListener('elm-update-found', function () {
+                            registration.update();
+                        });
+
+                        registration.onupdatefound = function () {
+                            window.location.reload();
+                        }
+                    });
+                });
+            }
+        </script>
+        <?php endif ?>
 
         <?php return ob_get_clean();
     }
