@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Response as ResponseFactory;
 class Response implements Responsable
 {
     protected ?string $version;
+    protected bool $hasSW;
     protected string $page;
     protected array $props;
     protected array $viewData = [];
@@ -20,6 +21,7 @@ class Response implements Responsable
         $manifestPath = public_path('mix-manifest.json');
 
         $this->version = file_exists($manifestPath) ? md5_file($manifestPath) : null;
+        $this->hasSW = file_exists(public_path('sw.js'));
         $this->page = $page;
         $this->props = $props;
     }
@@ -78,7 +80,8 @@ class Response implements Responsable
               }
               current.element = createAppElement()
 
-              if (!Elm.hasOwnProperty(page)) {
+              let app = get(Elm, page);
+              if (! app) {
                 console.warn('No Elm page found named: ' + page)
                 return
               }
@@ -206,9 +209,14 @@ class Response implements Responsable
               }
 
               // Handle server errors (non laravel-elm responses)
-              if (!result.headers.has('x-laravel-elm')) {
+              if (!result.headers.has('x-laravel-elm') && result.status === 500) {
                 showModal(await result.text())
                 return
+              }
+
+              // Handle non-laravel-elm responses
+              if (!result.headers.has('x-laravel-elm') && result.redirected) {
+                  window.location = result.url
               }
 
               // Assumed to be a json response at this point.
@@ -225,6 +233,20 @@ class Response implements Responsable
               }
 
               setPage(jsonResult.url, jsonResult.page, jsonResult.props)
+            }
+
+            function get(obj, path) {
+              let segments = path.split('.');
+
+              for (let segment of segments) {
+                if (obj.hasOwnProperty(segment)) {
+                  obj = obj[segment];
+                } else {
+                  return null;
+                }
+              }
+
+              return obj;
             }
 
             window.addEventListener('elm-ready', () => {
@@ -258,7 +280,7 @@ class Response implements Responsable
           })()
         </script>
 
-        <?php if($this->version): ?>
+        <?php if($this->hasSW && $this->version): ?>
         <script>
             // Register service worker, if supported, after the load event (to deprioritize it after lazy imports).
             if ('serviceWorker' in navigator) {

@@ -11,7 +11,7 @@ class ElmServiceProvider extends ServiceProvider
     protected $commands = [
         'Tightenco\Elm\Commands\Create',
         'Tightenco\Elm\Commands\Routes',
-        'Tightenco\Elm\Commands\PWA',
+        'Tightenco\Elm\Commands\SW',
     ];
 
     public function register()
@@ -42,6 +42,13 @@ class ElmServiceProvider extends ServiceProvider
                     ->getBag('default')
                     ->getMessages()
                 : (object)[];
+        });
+
+        Elm::share('status', function () {
+            return session()->has('status')
+                ? session()
+                    ->get('status')
+                : null;
         });
 
         $this->app[Kernel::class]->pushMiddleware(Middleware::class);

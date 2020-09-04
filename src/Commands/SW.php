@@ -3,10 +3,9 @@
 namespace Tightenco\Elm\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\File;
 
-class PWA extends Command
+class SW extends Command
 {
     protected $files;
     protected $signature = 'elm:pwa';
@@ -14,7 +13,7 @@ class PWA extends Command
 
     public function handle()
     {
-        $this->line("PWA Checklist:");
+        $this->line("Service Worker Checklist:");
 
         $manifestPath = public_path('manifest.json');
         if (! File::exists($manifestPath)) {

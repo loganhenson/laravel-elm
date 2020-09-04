@@ -15,17 +15,11 @@ This package makes it seamless.
 > Production Example
 ```
 const mix = require("laravel-mix");
-const elm = require("laravel-elm");
-
-mix.extend("elm", elm);
+require("laravel-elm");
 
 mix.js("resources/js/app.js", "public/js")
     .elm()
     .postCss("resources/css/main.css", "public/css", [require("tailwindcss")]);
-
-if (mix.inProduction()) {
-    mix.minify("public/js/elm.js").version(["public/js/elm.min.js"]);
-}
 ```
 
 ## Installation
@@ -64,7 +58,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
     <link href="{{ mix('/css/main.css') }}" rel="stylesheet">
 </head>
 <body>
-@elm  {{-- This includes the appropriate elm.js script tag --}}
+@elm  {{-- This includes the appropriate elm.js (or elm.min.js if in production) script tag --}}
 <script src="{{ mix('/js/app.js') }}"></script>
 </body>
 ...
@@ -72,7 +66,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
 
 > Hello, Example!
 
-## You can even pass props to your Elm Pages
+## You can pass props to your Elm Pages
 
 ```php
 use Tightenco\Elm\Elm;
@@ -109,12 +103,12 @@ use Tightenco\Elm\Elm;
 ```
 
 ## Updating Assets
-> Elm uses a service worker to ensure the latest assets are used. Add the `php artisan elm:pwa` to your "prod" command to ensure it gets the latest versions of you assets.
+> Elm uses a service worker to ensure the latest assets are used. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
 ```json
 {
   "scripts": {
     ...,
-    "prod": "npm run production;php artisan elm:pwa",
+    "prod": "npm run production;php artisan elm:sw",
     ...,
   }
 }
