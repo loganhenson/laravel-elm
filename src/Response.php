@@ -86,7 +86,7 @@ class Response implements Responsable
                 return
               }
 
-              current.app = Elm[page].Main.init({
+              current.app = app.Main.init({
                 node: current.element,
                 flags: props,
               })
