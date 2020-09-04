@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\File;
 class SW extends Command
 {
     protected $files;
-    protected $signature = 'elm:pwa';
+    protected $signature = 'elm:sw';
     protected $description = 'Publish service worker';
 
     public function handle()
