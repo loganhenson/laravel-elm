@@ -90,6 +90,7 @@ class Response implements Responsable
                 node: current.element,
                 flags: props,
               })
+              window.app = current.app;
 
               window.dispatchEvent(new CustomEvent('elm-ready'))
             }
