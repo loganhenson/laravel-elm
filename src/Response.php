@@ -69,7 +69,7 @@ class Response implements Responsable
             }
 
             function sendNewProps(props) {
-              current.props = props;
+              current.props = props
               current.app.ports.receiveNewProps.send(props)
             }
 
@@ -80,8 +80,8 @@ class Response implements Responsable
               }
               current.element = createAppElement()
 
-              let app = get(Elm, page);
-              if (! app) {
+              let app = get(Elm, page)
+              if (!app) {
                 console.warn('No Elm page found named: ' + page)
                 return
               }
@@ -90,7 +90,7 @@ class Response implements Responsable
                 node: current.element,
                 flags: props,
               })
-              window.app = current.app;
+              window.current = current
 
               window.dispatchEvent(new CustomEvent('elm-ready'))
             }
@@ -105,7 +105,7 @@ class Response implements Responsable
             }
 
             function setPage(url, page, props) {
-              current.props = props;
+              current.props = props
 
               if (current.page === page) {
                 sendNewProps(props)
@@ -114,6 +114,17 @@ class Response implements Responsable
               }
 
               updateHistoryAndUrl(url, page, props)
+
+              <?php if (config('app.debug')): ?>
+              window.postMessage({
+                type: 'laravel-elm',
+                data: {
+                  props: current.props,
+                  url: current.url,
+                  page: current.page,
+                }
+              }, '*')
+              <?php endif ?>
             }
 
             function createAppElement() {
@@ -174,21 +185,21 @@ class Response implements Responsable
             function buildFormData(formData, data, parentKey) {
               if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File) && !(data instanceof Blob)) {
                 Object.keys(data).forEach(key => {
-                  buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
-                });
+                  buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key)
+                })
               } else {
-                const value = data == null ? '' : data;
+                const value = data == null ? '' : data
 
-                formData.append(parentKey, value);
+                formData.append(parentKey, value)
               }
             }
 
             function jsonToFormData(data) {
-              const formData = new FormData();
+              const formData = new FormData()
 
-              buildFormData(formData, data);
+              buildFormData(formData, data)
 
-              return formData;
+              return formData
             }
 
             async function visit(url, { method = 'get', data = {} } = {}) {
@@ -217,19 +228,19 @@ class Response implements Responsable
 
               // Handle non-laravel-elm responses
               if (!result.headers.has('x-laravel-elm') && result.redirected) {
-                  window.location = result.url
+                window.location = result.url
               }
 
               // Assumed to be a json response at this point.
               const jsonResult = await result.json()
 
               if (current.version !== jsonResult.version) {
-                  window.dispatchEvent(new CustomEvent('elm-update-found'))
+                window.dispatchEvent(new CustomEvent('elm-update-found'))
               }
 
               // Handle flashed errors without a full page revisit (optimization).
               if (result.headers.has('x-laravel-elm-errors')) {
-                sendNewProps({...current.props, errors: jsonResult.errors})
+                sendNewProps({ ...current.props, errors: jsonResult.errors })
                 return
               }
 
@@ -237,17 +248,17 @@ class Response implements Responsable
             }
 
             function get(obj, path) {
-              let segments = path.split('.');
+              let segments = path.split('.')
 
               for (let segment of segments) {
                 if (obj.hasOwnProperty(segment)) {
-                  obj = obj[segment];
+                  obj = obj[segment]
                 } else {
-                  return null;
+                  return null
                 }
               }
 
-              return obj;
+              return obj
             }
 
             window.addEventListener('elm-ready', () => {
@@ -260,7 +271,7 @@ class Response implements Responsable
               })
 
               current.app.ports.patch.subscribe(({ url, data }) => {
-                data._method = 'PATCH';
+                data._method = 'PATCH'
                 visit(url, { method: 'POST', data })
               })
 
@@ -281,22 +292,22 @@ class Response implements Responsable
           })()
         </script>
 
-        <?php if($this->hasSW && $this->version): ?>
+        <?php if ($this->hasSW && $this->version): ?>
         <script>
-            // Register service worker, if supported, after the load event (to deprioritize it after lazy imports).
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    navigator.serviceWorker.register('/sw.js').then(function (registration) {
-                        window.addEventListener('elm-update-found', function () {
-                            registration.update();
-                        });
+          // Register service worker, if supported, after the load event (to deprioritize it after lazy imports).
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+              navigator.serviceWorker.register('/sw.js').then(function (registration) {
+                window.addEventListener('elm-update-found', function () {
+                  registration.update()
+                })
 
-                        registration.onupdatefound = function () {
-                            window.location.reload();
-                        }
-                    });
-                });
-            }
+                registration.onupdatefound = function () {
+                  window.location.reload()
+                }
+              })
+            })
+          }
         </script>
         <?php endif ?>
 
