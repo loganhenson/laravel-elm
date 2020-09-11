@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
 
 class ElmFacade
 {
-    protected $sharedProps = [];
+    protected $sharedProps = ['loading' => false];
 
     public function share($key, $value = null)
     {

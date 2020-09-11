@@ -1,15 +1,14 @@
 module PAGE.Main exposing (..)
 
-import LaravelElm
-import Dict exposing (Dict)
+import LaravelElm exposing (Errors, page, receiveNewProps)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed)
+import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed, bool)
 import Json.Decode.Pipeline exposing (required)
 
 
 type alias Props =
-    { errors : Errors }
+    { errors : Errors, loading : Bool }
 
 
 type alias State =
@@ -22,10 +21,6 @@ type alias Model =
     }
 
 
-type alias Errors =
-    Dict String (List String)
-
-
 type Msg
     = NewProps Value
 
@@ -34,6 +29,7 @@ decodeProps : Decoder Props
 decodeProps =
     succeed Props
         |> required "errors" (dict (list string))
+        |> required "loading" bool
 
 
 stateFromProps : Props -> State
@@ -43,12 +39,12 @@ stateFromProps props =
 
 main : Program Value (Result Error Model) Msg
 main =
-    LaravelElm.page
+    page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
         , update = update
         , view = view
-        , subscriptions = \_ -> LaravelElm.receiveNewProps NewProps
+        , subscriptions = \_ -> receiveNewProps NewProps
         }
 
 

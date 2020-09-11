@@ -202,7 +202,21 @@ class Response implements Responsable
               return formData
             }
 
+            function startLoading() {
+              current.props.loading = true;
+              window.dispatchEvent(new CustomEvent('elm-loading', { detail: true }))
+            }
+
+            function stopLoading() {
+              current.props.loading = false;
+              window.dispatchEvent(new CustomEvent('elm-loading', { detail: false }))
+            }
+
             async function visit(url, { method = 'get', data = {} } = {}) {
+              // Sent Request
+              startLoading()
+              sendNewProps(current.props)
+
               let result
               const headers = {
                 'X-Laravel-Elm': true,
@@ -219,6 +233,8 @@ class Response implements Responsable
                   body: jsonToFormData(data),
                 })
               }
+
+              stopLoading()
 
               // Handle server errors (non laravel-elm responses)
               if (!result.headers.has('x-laravel-elm') && result.status === 500) {
