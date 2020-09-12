@@ -102,18 +102,6 @@ class Response implements Responsable
               } else {
                 window.history.pushState({ url: url, page: page, props: props }, '', url)
               }
-            }
-
-            function setPage(url, page, props) {
-              current.props = props
-
-              if (current.page === page) {
-                sendNewProps(props)
-              } else {
-                setNewPage(url, page, props)
-              }
-
-              updateHistoryAndUrl(url, page, props)
 
               <?php if (config('app.debug')): ?>
               window.postMessage({
@@ -125,6 +113,21 @@ class Response implements Responsable
                 }
               }, '*')
               <?php endif ?>
+            }
+
+            function setPage(url, page, props) {
+              current.props = {
+                ...props,
+                viewports: window.history.state ? get(window.history.state, 'props.viewports', {}) : {}
+              }
+
+              if (current.page === page) {
+                sendNewProps(current.props)
+              } else {
+                setNewPage(url, page, current.props)
+              }
+
+              updateHistoryAndUrl(url, page, current.props)
             }
 
             function createAppElement() {
@@ -203,12 +206,12 @@ class Response implements Responsable
             }
 
             function startLoading() {
-              current.props.loading = true;
+              current.props.loading = true
               window.dispatchEvent(new CustomEvent('elm-loading', { detail: true }))
             }
 
             function stopLoading() {
-              current.props.loading = false;
+              current.props.loading = false
               window.dispatchEvent(new CustomEvent('elm-loading', { detail: false }))
             }
 
@@ -263,14 +266,14 @@ class Response implements Responsable
               setPage(jsonResult.url, jsonResult.page, jsonResult.props)
             }
 
-            function get(obj, path) {
+            function get(obj, path, fallback = null) {
               let segments = path.split('.')
 
               for (let segment of segments) {
                 if (obj.hasOwnProperty(segment)) {
                   obj = obj[segment]
                 } else {
-                  return null
+                  return fallback
                 }
               }
 
@@ -278,6 +281,11 @@ class Response implements Responsable
             }
 
             window.addEventListener('elm-ready', () => {
+              current.app.ports.sendScroll.subscribe(({ key, x, y }) => {
+                current.props.viewports[key] = { x, y }
+                updateHistoryAndUrl(current.url, current.page, current.props)
+              })
+
               current.app.ports.get.subscribe(url => {
                 visit(url)
               })

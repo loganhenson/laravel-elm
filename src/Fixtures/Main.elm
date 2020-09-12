@@ -1,9 +1,9 @@
 module PAGE.Main exposing (..)
 
-import LaravelElm exposing (Errors, page, receiveNewProps)
+import LaravelElm exposing (page, Errors, receiveNewProps)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed, bool)
+import Json.Decode exposing (Decoder, Error, Value, decodeValue, succeed, dict, list, string, int, float, bool)
 import Json.Decode.Pipeline exposing (required)
 
 
@@ -23,12 +23,13 @@ type alias Model =
 
 type Msg
     = NewProps Value
+    | NoOp
 
 
 decodeProps : Decoder Props
 decodeProps =
     succeed Props
-        |> required "errors" (dict (list string))
+        |> required "errors" Errors
         |> required "loading" bool
 
 
@@ -45,6 +46,7 @@ main =
         , update = update
         , view = view
         , subscriptions = \_ -> receiveNewProps NewProps
+        , onMount = \_ -> Cmd.none
         }
 
 
