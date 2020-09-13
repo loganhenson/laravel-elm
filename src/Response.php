@@ -58,6 +58,7 @@ class Response implements Responsable
 
         <script>
           (() => {
+            // State.
             let current = {
               version: <?= $this->version ? "'{$this->version}'" : 'null' ?>,
               element: null,
@@ -67,6 +68,35 @@ class Response implements Responsable
               modal: null,
               props: null,
             }
+
+            // Utilities.
+            function get(obj, path, fallback = null) {
+              let segments = path.split('.')
+
+              for (let segment of segments) {
+                if (obj.hasOwnProperty(segment)) {
+                  obj = obj[segment]
+                } else {
+                  return fallback
+                }
+              }
+
+              return obj
+            }
+
+            function debounce(callback, wait = 250) {
+              let timer
+              return (...args) => {
+                clearTimeout(timer)
+                timer = setTimeout(() => callback(...args), wait)
+              }
+            }
+
+            // Core.
+            const setViewports = debounce(({ key, x, y }) => {
+              current.props.viewports[key] = { x, y }
+              updateHistoryAndUrl(current.url, current.page, current.props)
+            }, 100)
 
             function sendNewProps(props) {
               current.props = props
@@ -266,25 +296,8 @@ class Response implements Responsable
               setPage(jsonResult.url, jsonResult.page, jsonResult.props)
             }
 
-            function get(obj, path, fallback = null) {
-              let segments = path.split('.')
-
-              for (let segment of segments) {
-                if (obj.hasOwnProperty(segment)) {
-                  obj = obj[segment]
-                } else {
-                  return fallback
-                }
-              }
-
-              return obj
-            }
-
             window.addEventListener('elm-ready', () => {
-              current.app.ports.sendScroll.subscribe(({ key, x, y }) => {
-                current.props.viewports[key] = { x, y }
-                updateHistoryAndUrl(current.url, current.page, current.props)
-              })
+              current.app.ports.sendScroll.subscribe(setViewports)
 
               current.app.ports.get.subscribe(url => {
                 visit(url)
