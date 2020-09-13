@@ -113,8 +113,8 @@ decodeErrors =
     dict (list string)
 
 
-setViewports : msg -> { props | viewports : Viewports } -> Cmd msg
-setViewports msg { viewports } =
+setViewports : msg -> Viewports -> Cmd msg
+setViewports msg viewports =
     Cmd.batch
         (List.map
             (\( key, { x, y } ) ->
