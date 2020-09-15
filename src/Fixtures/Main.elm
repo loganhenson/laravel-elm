@@ -1,6 +1,6 @@
 module PAGE.Main exposing (..)
 
-import LaravelElm exposing (page, Errors, receiveNewProps)
+import LaravelElm exposing (page, Errors, decodeErrors, receiveNewProps)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, succeed, dict, list, string, int, float, bool)
@@ -29,7 +29,7 @@ type Msg
 decodeProps : Decoder Props
 decodeProps =
     succeed Props
-        |> required "errors" Errors
+        |> required "errors" decodeErrors
         |> required "loading" bool
 
 
@@ -55,6 +55,12 @@ update msg { props, state } =
     case msg of
         NewProps newProps ->
             ( { props = Result.withDefault props <| decodeValue decodeProps newProps
+              , state = state
+              }
+            , Cmd.none
+            )
+        NoOp ->
+            ( { props = props
               , state = state
               }
             , Cmd.none

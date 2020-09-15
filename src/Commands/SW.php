@@ -3,7 +3,6 @@
 namespace Tightenco\Elm\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 
 class SW extends Command
 {
@@ -16,20 +15,22 @@ class SW extends Command
         $this->line("Service Worker Checklist:");
 
         $manifestPath = public_path('manifest.json');
-        if (! File::exists($manifestPath)) {
-            File::put($manifestPath, File::get(__DIR__ . '/../Fixtures/manifest.json'));
+        if (! is_file($manifestPath)) {
+            $manifest = json_decode(file_get_contents(__DIR__ . '/../Fixtures/manifest.json'), true);
+            $manifest['start_url'] = config('app.url');
+            file_put_contents($manifestPath, json_encode($manifest, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL);
             $this->line('✓ manifest.json - newly generated');
         } else {
             $this->line("✓ {$this->shortPath($manifestPath)}");
         }
 
         $mixManifestPath = public_path('mix-manifest.json');
-        if (! File::exists($mixManifestPath)) {
+        if (! is_file($mixManifestPath)) {
             $this->line('✗ mix-manifest.json - Try running `npm run (dev/watch/prod)` first');
         } else {
             $this->line("✓ {$this->shortPath($mixManifestPath)}");
 
-            $files = collect(json_decode(File::get($mixManifestPath), true))->values();
+            $files = collect(json_decode(file_get_contents($mixManifestPath), true))->values();
 
             $entries = $files->map(function (string $file) {
                 return "{url: '{$file}', revision: null}";
@@ -42,7 +43,7 @@ class SW extends Command
             file;
 
             $swPath = public_path('sw.js');
-            File::put($swPath, $file);
+            file_put_contents($swPath, $file);
 
             $this->line("🔧 worker generated: {$this->shortPath($swPath)}");
 

@@ -3,17 +3,16 @@
 namespace Tightenco\Elm\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Tightenco\Elm\Concerns\EnsureElmInitialized;
 
 class Create extends Command
 {
+    use EnsureElmInitialized;
+
     protected $files;
     protected $signature = 'elm:create {page}';
     protected $description = 'Create Elm Page';
-
-    use EnsureElmInitialized;
 
     public function handle()
     {
@@ -21,13 +20,16 @@ class Create extends Command
 
         $page = Str::studly($this->argument('page'));
 
-        File::makeDirectory(resource_path('elm/' . $page));
+        $mainDir = resource_path('elm/' . $page);
+        if (! is_dir($mainDir)) {
+            mkdir($mainDir, 0755, true);
+        }
 
-        File::put(resource_path("elm/{$page}/Main.elm"), $this->makePage($page));
+        file_put_contents(resource_path("elm/{$page}/Main.elm"), $this->makePage($page));
     }
 
     private function makePage(string $page)
     {
-        return str_replace('PAGE', $page, File::get(__DIR__ . '/../Fixtures/Main.elm'));
+        return str_replace('PAGE', $page, file_get_contents(__DIR__ . '/../Fixtures/Main.elm'));
     }
 }

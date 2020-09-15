@@ -71,10 +71,14 @@ class Response implements Responsable
 
             // Utilities.
             function get(obj, path, fallback = null) {
+              if (obj === null || typeof obj !== 'object') {
+                return fallback;
+              }
+
               let segments = path.split('.')
 
               for (let segment of segments) {
-                if (obj.hasOwnProperty(segment)) {
+                if (segment in obj) {
                   obj = obj[segment]
                 } else {
                   return fallback
@@ -255,6 +259,7 @@ class Response implements Responsable
                 'X-Laravel-Elm': true,
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Requested-With': 'XMLHttpRequest',
+                "X-CSRF-Token": get(document.head.querySelector("[name~=csrf-token][content]"), 'content'),
               }
 
               if (method === 'get') {
@@ -297,24 +302,34 @@ class Response implements Responsable
             }
 
             window.addEventListener('elm-ready', () => {
-              current.app.ports.sendScroll.subscribe(setViewports)
+              if ('sendScroll' in current.app.ports) {
+                current.app.ports.sendScroll.subscribe(setViewports)
+              }
 
-              current.app.ports.get.subscribe(url => {
-                visit(url)
-              })
+              if ('get' in current.app.ports) {
+                current.app.ports.get.subscribe(url => {
+                  visit(url)
+                })
+              }
 
-              current.app.ports.post.subscribe(({ url, data }) => {
-                visit(url, { method: 'POST', data })
-              })
+              if ('post' in current.app.ports) {
+                current.app.ports.post.subscribe(({ url, data }) => {
+                  visit(url, { method: 'POST', data })
+                })
+              }
 
-              current.app.ports.patch.subscribe(({ url, data }) => {
-                data._method = 'PATCH'
-                visit(url, { method: 'POST', data })
-              })
+              if ('patch' in current.app.ports) {
+                current.app.ports.patch.subscribe(({ url, data }) => {
+                  data._method = 'PATCH'
+                  visit(url, { method: 'POST', data })
+                })
+              }
 
-              current.app.ports.delete.subscribe(url => {
-                visit(url, { method: 'DELETE' })
-              })
+              if ('delete' in current.app.ports) {
+                current.app.ports.delete.subscribe(url => {
+                  visit(url, { method: 'DELETE' })
+                })
+              }
             })
 
             window.addEventListener('popstate', async (e) => {

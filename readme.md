@@ -8,27 +8,18 @@ Want a stable and opinionated platform to build on?
 
 This package makes it seamless.
 
-**Required**: The partner Javascript library with the same name, `npm i laravel-elm --save-dev`
-> https://github.com/loganhenson/laravel-elm
-
-## Add the elm runner to your `webpack.mix.js` e.g.:
-> Production Example
-```
-const mix = require("laravel-mix");
-require("laravel-elm");
-
-mix.js("resources/js/app.js", "public/js")
-    .elm()
-    .postCss("resources/css/main.css", "public/css", [require("tailwindcss")]);
-```
-
 ## Installation
 
 ```
 composer require tightenco/laravel-elm
+php artisan elm:install
+```
+> Optional Auth Scaffolding (Tailwind)
+```
+php artisan elm:auth
 ```
 
-## Create your first Elm Page
+## Create Your Own Elm Pages
 ```
 php artisan elm:create Example
 ```
@@ -38,7 +29,7 @@ php artisan elm:create Example
 npm run watch
 ```
 
-You may then use the `Elm` facade to render your Elm Pages.
+You use the `Elm` facade to render your Elm Pages.
 
 ```php
 use Tightenco\Elm\Elm;
@@ -49,8 +40,8 @@ public function index()
 }
 ```
 
-And then render it in your `app.blade.php` inside your `<body>`:
-
+It is magically rendered in your `app.blade.php`!
+(`elm:install` sets up your `app.blade.php` so don't worry about adding the `@elm` directive manually if you don't want to.)
 ```blade
 ...
 <head>
@@ -58,7 +49,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
     <link href="{{ mix('/css/main.css') }}" rel="stylesheet">
 </head>
 <body>
-@elm  {{-- This includes the appropriate elm.js (or elm.min.js if in production) script tag --}}
+@elm
 <script src="{{ mix('/js/app.js') }}"></script>
 </body>
 ...
@@ -66,7 +57,7 @@ And then render it in your `app.blade.php` inside your `<body>`:
 
 > Hello, Example!
 
-## You can pass props to your Elm Pages
+## You pass props to your Elm Pages
 
 ```php
 use Tightenco\Elm\Elm;
@@ -76,7 +67,7 @@ public function index()
     return Elm::render('Example', [
             'value' => 'Hello, World!',
             // You can pass anything you might need:
-             'user' => auth()->user(),
+            'user' => auth()->user(),
         ]),
     ]);
 }

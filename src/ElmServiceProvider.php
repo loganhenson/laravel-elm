@@ -4,14 +4,23 @@ namespace Tightenco\Elm;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Tightenco\Elm\Auth\AuthRouteMethods;
+use Tightenco\Elm\Commands\Auth;
+use Tightenco\Elm\Commands\Create;
+use Tightenco\Elm\Commands\Install;
+use Tightenco\Elm\Commands\Routes;
+use Tightenco\Elm\Commands\SW;
 
 class ElmServiceProvider extends ServiceProvider
 {
     protected $commands = [
-        'Tightenco\Elm\Commands\Create',
-        'Tightenco\Elm\Commands\Routes',
-        'Tightenco\Elm\Commands\SW',
+        Install::class,
+        Create::class,
+        Routes::class,
+        SW::class,
+        Auth::class,
     ];
 
     public function register()
@@ -20,7 +29,9 @@ class ElmServiceProvider extends ServiceProvider
             return new Elm;
         });
 
-        $this->commands($this->commands);
+        if ($this->app->runningInConsole()) {
+            $this->commands($this->commands);
+        }
     }
 
     public function boot()
@@ -36,12 +47,7 @@ class ElmServiceProvider extends ServiceProvider
         });
 
         Elm::share('errors', function () {
-            return session()->has('errors')
-                ? session()
-                    ->get('errors')
-                    ->getBag('default')
-                    ->getMessages()
-                : (object)[];
+            return (object)[];
         });
 
         Elm::share('status', function () {
@@ -50,6 +56,8 @@ class ElmServiceProvider extends ServiceProvider
                     ->get('status')
                 : null;
         });
+
+        Route::mixin(new AuthRouteMethods);
 
         $this->app[Kernel::class]->pushMiddleware(Middleware::class);
     }

@@ -2,36 +2,34 @@
 
 namespace Tightenco\Elm\Concerns;
 
-use Illuminate\Support\Facades\File;
-
 trait EnsureElmInitialized
 {
     private function ensureInitialized()
     {
         $elmPath = resource_path('elm');
 
-        if (! File::isDirectory($elmPath)) {
-            File::makeDirectory($elmPath);
+        if (! is_dir($elmPath)) {
+            mkdir($elmPath, 0755, true);
         }
 
         $laravelElmStuffPath = $elmPath . '/laravel-elm-stuff';
-        if (! File::isDirectory($laravelElmStuffPath)) {
-            File::makeDirectory($laravelElmStuffPath);
+        if (! is_dir($laravelElmStuffPath)) {
+            mkdir($laravelElmStuffPath, 0755, true);
         }
 
         $laravelElmSrcPath = $elmPath . '/src';
-        if (! File::isDirectory($laravelElmSrcPath)) {
-            File::makeDirectory($laravelElmSrcPath);
+        if (! is_dir($laravelElmSrcPath)) {
+            mkdir($laravelElmSrcPath, 0755, true);
         }
 
         $elmJsonPath = $elmPath . '/elm.json';
-        if (! File::isFile($elmJsonPath)) {
-            File::copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);
+        if (! is_file($elmJsonPath)) {
+            copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);
         }
 
         $laravelElmPath = $laravelElmStuffPath . '/LaravelElm.elm';
-        if (! File::isFile($elmJsonPath)) {
-            File::copy(__DIR__ . '/../Fixtures/LaravelElm.elm', $laravelElmPath);
+        if (! is_file($laravelElmPath)) {
+            copy(__DIR__ . '/../Fixtures/LaravelElm.elm', $laravelElmPath);
         }
 
         return $elmPath;
