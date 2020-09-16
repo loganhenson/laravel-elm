@@ -20,6 +20,9 @@ port receiveNewProps : (Value -> msg) -> Sub msg
 port sendScroll : Value -> Cmd msg
 
 
+port sendState : Value -> Cmd msg
+
+
 type alias Scroll =
     { key : String, x : Float, y : Float }
 
@@ -39,13 +42,14 @@ type alias Viewports =
 page :
     { decodeProps : Decoder props
     , stateFromProps : props -> state
+    , encodeState : state -> Value
     , view : { props : props, state : state } -> Html msg
     , update : msg -> { props : props, state : state } -> ( { props : props, state : state }, Cmd msg )
     , subscriptions : Result Error { props : props, state : state } -> Sub msg
     , onMount : props -> Cmd msg
     }
     -> Program Value (Result Error { props : props, state : state }) msg
-page { decodeProps, stateFromProps, view, update, subscriptions, onMount } =
+page { decodeProps, stateFromProps, encodeState, view, update, subscriptions, onMount } =
     Browser.element
         { init =
             \json ->
@@ -75,7 +79,29 @@ page { decodeProps, stateFromProps, view, update, subscriptions, onMount } =
                             ( newModel, cmd ) =
                                 update msg model
                         in
-                        ( Ok newModel, cmd )
+                        ( Ok newModel
+                        , Cmd.batch
+                            [ cmd
+                            , case model.state /= newModel.state of
+                                True ->
+                                    let
+                                        prevEncodedState =
+                                            encodeState model.state
+
+                                        encodedState =
+                                            encodeState newModel.state
+                                    in
+                                    case prevEncodedState /= encodedState of
+                                        True ->
+                                            sendState <| encodeState newModel.state
+
+                                        False ->
+                                            Cmd.none
+
+                                False ->
+                                    Cmd.none
+                            ]
+                        )
 
                     Err error ->
                         ( Err error, Cmd.none )

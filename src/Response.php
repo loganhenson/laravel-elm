@@ -67,12 +67,13 @@ class Response implements Responsable
               page: null,
               modal: null,
               props: null,
+              state: null,
             }
 
             // Utilities.
             function get(obj, path, fallback = null) {
               if (obj === null || typeof obj !== 'object') {
-                return fallback;
+                return fallback
               }
 
               let segments = path.split('.')
@@ -138,15 +139,20 @@ class Response implements Responsable
               }
 
               <?php if (config('app.debug')): ?>
+              sendToDevtools()
+              <?php endif ?>
+            }
+
+            function sendToDevtools() {
               window.postMessage({
-                type: 'laravel-elm',
+                type: 'laravel-elm-devtools',
                 data: {
                   props: current.props,
+                  state: current.state,
                   url: current.url,
                   page: current.page,
                 }
               }, '*')
-              <?php endif ?>
             }
 
             function setPage(url, page, props) {
@@ -249,6 +255,12 @@ class Response implements Responsable
               window.dispatchEvent(new CustomEvent('elm-loading', { detail: false }))
             }
 
+            function encrypted_csrf_token_from_cookie() {
+              const cookie_name = 'XSRF-TOKEN'
+              const match = document.cookie.match(new RegExp(`(^|;\\s*)(${cookie_name})=([^;]*)`))
+              return (match ? decodeURIComponent(match[3]) : null)
+            }
+
             async function visit(url, { method = 'get', data = {} } = {}) {
               // Sent Request
               startLoading()
@@ -259,7 +271,7 @@ class Response implements Responsable
                 'X-Laravel-Elm': true,
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Requested-With': 'XMLHttpRequest',
-                "X-CSRF-Token": get(document.head.querySelector("[name~=csrf-token][content]"), 'content'),
+                'X-XSRF-Token': encrypted_csrf_token_from_cookie(),
               }
 
               if (method === 'get') {
@@ -280,9 +292,18 @@ class Response implements Responsable
                 return
               }
 
-              // Handle non-laravel-elm responses
+              // Handle non-laravel-elm redirects
               if (!result.headers.has('x-laravel-elm') && result.redirected) {
                 window.location = result.url
+              }
+
+              // Handle dd() responses (200, but start with a script tag)
+              if (!result.headers.has('x-laravel-elm')) {
+                const response = await result.text()
+                if (response.indexOf('<script>') === 0) {
+                  showModal(response)
+                  return
+                }
               }
 
               // Assumed to be a json response at this point.
@@ -302,6 +323,15 @@ class Response implements Responsable
             }
 
             window.addEventListener('elm-ready', () => {
+              if ('sendState' in current.app.ports) {
+                current.app.ports.sendState.subscribe((state) => {
+                  current.state = state
+                  <?php if (config('app.debug')): ?>
+                  sendToDevtools()
+                  <?php endif ?>
+                })
+              }
+
               if ('sendScroll' in current.app.ports) {
                 current.app.ports.sendScroll.subscribe(setViewports)
               }
@@ -355,6 +385,7 @@ class Response implements Responsable
                 })
 
                 registration.onupdatefound = function () {
+                  // @TODO: Prompt user to reload instead.
                   window.location.reload()
                 }
               })

@@ -5,6 +5,7 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, succeed, dict, list, string, int, float, bool)
 import Json.Decode.Pipeline exposing (required)
+import Json.Encode
 
 
 type alias Props =
@@ -43,6 +44,7 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
+        , encodeState = \_ -> Json.Encode.null
         , update = update
         , view = view
         , subscriptions = \_ -> receiveNewProps NewProps
