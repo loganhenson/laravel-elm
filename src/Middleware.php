@@ -34,6 +34,11 @@ class Middleware
             $response->setStatusCode(303);
         }
 
+        // Handle user attempting to logout of an expired session.
+        if ($response->getStatusCode() === 419) {
+            return redirect('/');
+        }
+
         return $response;
     }
 }
