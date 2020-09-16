@@ -295,31 +295,38 @@ class Response implements Responsable
               // Handle non-laravel-elm redirects
               if (!result.headers.has('x-laravel-elm') && result.redirected) {
                 window.location = result.url
+                return
               }
 
               // Handle dd() responses (200, but start with a script tag)
+              <?php if (config('app.debug')): ?>
               if (!result.headers.has('x-laravel-elm')) {
-                const response = await result.text()
+                const response = await result.clone().text()
                 if (response.indexOf('<script>') === 0) {
                   showModal(response)
                   return
                 }
               }
+                <?php endif ?>
 
               // Assumed to be a json response at this point.
-              const jsonResult = await result.json()
+              try {
+                const jsonResult = await result.json()
 
-              if (current.version !== jsonResult.version) {
-                window.dispatchEvent(new CustomEvent('elm-update-found'))
+                if (current.version !== jsonResult.version) {
+                  window.dispatchEvent(new CustomEvent('elm-update-found'))
+                }
+
+                // Handle flashed errors without a full page revisit (optimization).
+                if (result.headers.has('x-laravel-elm-errors')) {
+                  sendNewProps({ ...current.props, errors: jsonResult.errors })
+                  return
+                }
+
+                setPage(jsonResult.url, jsonResult.page, jsonResult.props)
+              } catch (e) {
+                console.warn(e)
               }
-
-              // Handle flashed errors without a full page revisit (optimization).
-              if (result.headers.has('x-laravel-elm-errors')) {
-                sendNewProps({ ...current.props, errors: jsonResult.errors })
-                return
-              }
-
-              setPage(jsonResult.url, jsonResult.page, jsonResult.props)
             }
 
             window.addEventListener('elm-ready', () => {
