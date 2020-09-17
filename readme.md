@@ -18,6 +18,7 @@ php artisan elm:install
 ```
 php artisan elm:auth
 ```
+> Then add `Elm::authRoutes()` to your `web.php`
 
 ## Create Your Own Elm Pages
 ```

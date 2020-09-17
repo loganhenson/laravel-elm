@@ -3,10 +3,9 @@
 namespace Tightenco\Elm;
 
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Tightenco\Elm\Auth\AuthRouteMethods;
 use Tightenco\Elm\Commands\Auth;
 use Tightenco\Elm\Commands\Create;
 use Tightenco\Elm\Commands\Install;
@@ -28,6 +27,8 @@ class ElmServiceProvider extends ServiceProvider
         $this->app->singleton('Elm', function ($app) {
             return new Elm;
         });
+
+        AliasLoader::getInstance()->alias('Elm', Elm::class);
 
         if ($this->app->runningInConsole()) {
             $this->commands($this->commands);
@@ -56,8 +57,6 @@ class ElmServiceProvider extends ServiceProvider
                     ->get('status')
                 : null;
         });
-
-        Route::mixin(new AuthRouteMethods);
 
         $this->app[Kernel::class]->pushMiddleware(Middleware::class);
     }

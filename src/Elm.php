@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Tightenco\Elm\Response render($component, $props = [])
  * @method static void share($key, $value = null)
  * @method static array getShared($key = null)
+ * @method static array authRoutes()
  *
  * @see \Tightenco\Elm\ElmFacade
  */

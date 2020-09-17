@@ -2,13 +2,18 @@
 
 namespace Tightenco\Elm;
 
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Route;
+use Tightenco\Elm\Auth\AuthRouteMethods;
 
 class ElmFacade
 {
     protected $sharedProps = ['loading' => false, 'viewports' => []];
+
+    public function authRoutes()
+    {
+        Route::mixin(new AuthRouteMethods);
+    }
 
     public function share($key, $value = null)
     {
