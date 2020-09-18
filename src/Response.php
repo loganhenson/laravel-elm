@@ -106,6 +106,9 @@ class Response implements Responsable
             function sendNewProps(props) {
               current.props = props
               current.app.ports.receiveNewProps.send(props)
+              <?php if (config('app.debug')): ?>
+              sendToDevtools()
+              <?php endif ?>
             }
 
             function setNewPage(url, page, props) {
