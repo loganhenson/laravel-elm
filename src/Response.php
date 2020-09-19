@@ -165,10 +165,6 @@ class Response implements Responsable
               } else {
                 window.history.pushState({ url: url, page: page, props: props }, '', url)
               }
-
-              <?php if (config('app.debug')): ?>
-              sendToDevtools()
-              <?php endif ?>
             }
 
             <?php if (config('app.debug')): ?>
@@ -203,6 +199,10 @@ class Response implements Responsable
               }
 
               updateHistoryAndUrl(url, page, current.props)
+
+              <?php if (config('app.debug')): ?>
+              sendToDevtools()
+              <?php endif ?>
             }
 
             function createAppElement() {
