@@ -68,7 +68,31 @@ class Response implements Responsable
               modal: null,
               props: null,
               state: null,
+              subscribed: [],
+              // API.
+              api: {
+                subscribe: function (port, callback) {
+                  if (port in current.app.ports) {
+                    current.subscribed.push(port)
+                    current.app.ports[port].subscribe(callback)
+                  }
+                },
+                send: function (port, value) {
+                  if (port in current.app.ports) {
+                    current.app.ports[port].send(value)
+                  }
+                }
+              },
+              register: function (module, callback) {
+                window.addEventListener('elm-ready', () => {
+                  if (current.page.startsWith(module) || module === '*') {
+                    callback(this.api)
+                  }
+                })
+              }
             }
+
+            window.LaravelElm = current
 
             // Utilities.
             function get(obj, path, fallback = null) {
@@ -128,7 +152,8 @@ class Response implements Responsable
                 node: current.element,
                 flags: props,
               })
-              window.current = current
+
+              current.subscribed = []
 
               window.dispatchEvent(new CustomEvent('elm-ready'))
             }
@@ -146,6 +171,7 @@ class Response implements Responsable
               <?php endif ?>
             }
 
+            <?php if (config('app.debug')): ?>
             function sendToDevtools() {
               window.postMessage({
                 type: 'laravel-elm-devtools',
@@ -154,9 +180,15 @@ class Response implements Responsable
                   state: current.state,
                   url: current.url,
                   page: current.page,
+                  ports: current.subscribed,
                 }
               }, '*')
             }
+
+            window.addEventListener('laravel-elm-devtools-connect', () => {
+              sendToDevtools()
+            })
+            <?php endif ?>
 
             function setPage(url, page, props) {
               current.props = {
