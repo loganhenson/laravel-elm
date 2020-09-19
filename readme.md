@@ -94,6 +94,30 @@ use Tightenco\Elm\Elm;
 ...
 ```
 
+## Ports
+> Talk back and forth from JS & Elm easily (if you have to)
+`resources/elm/ExamplePage.elm`
+```elm
+port module ExamplePage exposing (..)
+
+port saveEmail : String -> Cmd msg
+
+port receiveEmail : (Value -> msg) -> Sub msg
+...
+```
+```js
+LaravelElm.register("ExamplePage", page => {
+    page.send("receiveEmail", localStorage.getItem("email"))
+
+    page.subscribe("saveEmail", email => {
+        localStorage.setItem("email", email);
+    });
+});
+```
+
+## Debugging
+Install the laravel-elm-devtools extension for chrome
+
 ## Updating Assets
 > Elm uses a service worker to ensure the latest assets are used. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
 ```json
@@ -108,7 +132,7 @@ use Tightenco\Elm\Elm;
 
 ## Testing
 
-Just add this to your tests/TestCase.php setUp method.
+Add this to your tests/TestCase.php setUp method.
 ```php
 $this->withHeaders(['X-Laravel-Elm' => true]);
 ```
