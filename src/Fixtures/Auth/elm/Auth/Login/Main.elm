@@ -1,15 +1,15 @@
 module Auth.Login.Main exposing (..)
 
-import Dict exposing (Dict)
-import Html exposing (Html, a, button, div, form, input, label, text)
-import Html.Attributes exposing (attribute, class, classList, for, id, type_, value)
-import Html.Events exposing (onClick, onInput, onSubmit)
-import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed)
+import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink)
+import Html exposing (Html, a, button, div, form, text)
+import Html.Attributes exposing (attribute, class, disabled, type_)
+import Html.Events exposing (onClick, onInput, onSubmit, preventDefaultOn)
+import Json.Decode exposing (Decoder, Error, Value, bool, decodeValue, dict, list, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
 import LaravelElm exposing (Errors, page, receiveNewProps)
-import Maybe exposing (withDefault)
 import Routes exposing (get, post)
+import Tuple exposing (pair)
 
 
 type alias Props =
@@ -34,6 +34,7 @@ type Msg
     | SetEmail String
     | SetPassword String
     | ForgotPassword
+    | Register
 
 
 decodeProps : Decoder Props
@@ -44,7 +45,10 @@ decodeProps =
 
 stateFromProps : Props -> State
 stateFromProps =
-    \_ -> { email = "", password = "" }
+    \_ ->
+        { email = ""
+        , password = ""
+        }
 
 
 main : Program Value (Result Error Model) Msg
@@ -52,6 +56,7 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
+        , encodeState = \_ -> Json.Encode.null
         , view = view
         , update = update
         , subscriptions = \_ -> receiveNewProps NewProps
@@ -71,6 +76,9 @@ update msg { props, state } =
 
         ForgotPassword ->
             ( { props = props, state = state }, get Routes.passwordUpdate )
+
+        Register ->
+            ( { props = props, state = state }, get Routes.register )
 
         SetEmail newEmail ->
             ( { props = props, state = { state | email = newEmail } }, Cmd.none )
@@ -95,34 +103,28 @@ update msg { props, state } =
 
 view : Model -> Html Msg
 view { props, state } =
-    div [ class "container mx-auto m-4 p-4" ]
-        [ div [ class "flex flex-wrap justify-center" ]
-            [ div [ class "w-full max-w-sm" ]
-                [ div [ class "flex flex-col break-words bg-white border border-2 rounded shadow-md" ]
-                    [ div [ class "font-semibold bg-indigo-500 text-white py-3 px-6 mb-0" ]
-                        [ text "Login" ]
-                    , form [ onSubmit <| Submit, class "w-full p-6" ]
-                        [ div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "email" ]
-                                [ text "E-Mail Address" ]
-                            , input [ onInput SetEmail, value state.email, attribute "autofocus" "", class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", classList [ ( "border-red-500", Dict.get "email" props.errors |> Maybe.withDefault [] |> List.isEmpty |> not ) ], id "email", attribute "required" "", type_ "email", attribute "autocomplete" "email" ] []
-                            , div [ class "text-red-500 text-xs italic mt-4" ]
-                                (List.map (\error -> div [] [ text error ]) (Dict.get "email" props.errors |> withDefault []))
-                            ]
-                        , div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "password" ]
-                                [ text "Password" ]
-                            , input [ onInput SetPassword, value state.password, class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", classList [ ( "border-red-500", Dict.get "password" props.errors |> Maybe.withDefault [] |> List.isEmpty |> not ) ], id "password", attribute "required" "", type_ "password", attribute "autocomplete" "current-password" ] []
-                            , div [ class "text-red-500 text-xs italic mt-4" ]
-                                (List.map (\error -> div [] [ text error ]) (Dict.get "password" props.errors |> withDefault []))
-                            ]
-                        , div [ class "flex flex-wrap items-center" ]
-                            [ button [ class "inline-block align-middle text-center select-none border font-bold whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline text-gray-100 bg-indigo-500 hover:bg-indigo-700", type_ "submit" ]
-                                [ text "Login" ]
-                            , a [ onClick ForgotPassword, class "text-sm text-indigo-500 hover:text-indigo-700 whitespace-no-wrap no-underline ml-auto cursor-pointer" ] [ text "Forgot Your Password?" ]
-                            ]
+    div []
+        [ authContainer "Sign in to your account"
+            [ form [ onSubmit <| Submit ]
+                [ div [ class "flex flex-wrap mb-6" ]
+                    [ authInput SetEmail state.email props.errors "Email" "email" [ attribute "autofocus" "", attribute "required" "", type_ "email", attribute "autocomplete" "email" ]
+                    , authErrors props.errors "email"
+                    ]
+                , div [ class "flex flex-wrap" ]
+                    [ div [ class "flex w-full" ]
+                        [ authInput SetPassword state.password props.errors "Password" "password" [ attribute "required" "", type_ "password", attribute "autocomplete" "current-password" ]
+                        , authErrors props.errors "password"
+                        ]
+                    , div [ class "flex items-center mt-8 w-full justify-between" ]
+                        [ button [ class authButtonClasses, type_ "submit" ]
+                            [ text "Continue" ]
+                        , authLink ForgotPassword "text-right" [ text "Forgot Your Password?" ]
                         ]
                     ]
                 ]
+            ]
+        , div [ class "w-full text-center" ]
+            [ text "Don't have an account?"
+            , authLink Register "ml-6" [ text "Sign up" ]
             ]
         ]

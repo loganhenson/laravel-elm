@@ -1,5 +1,6 @@
 module Auth.Verify.Main exposing (..)
 
+import Auth.Layout exposing (authButtonClasses, authContainer)
 import Html exposing (Html, button, div, form, text)
 import Html.Attributes exposing (class, type_)
 import Html.Events exposing (onSubmit)
@@ -48,6 +49,7 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
+        , encodeState = \_ -> Json.Encode.null
         , update = update
         , view = view
         , subscriptions = \_ -> receiveNewProps NewProps
@@ -76,32 +78,24 @@ update msg { props, state } =
 
 view : Model -> Html Msg
 view { props, state } =
-    div [ class "container mx-auto m-4 p-4" ]
-        [ div [ class "flex flex-wrap justify-center" ]
-            [ div [ class "w-full max-w-sm" ]
-                [ div [ class "flex flex-col break-words bg-white border border-2 rounded shadow-md" ]
-                    [ div [ class "font-semibold bg-gray-200 text-gray-700 py-3 px-6 mb-0" ]
-                        [ text "Verify Your Email Address" ]
-                    , form [ onSubmit <| Submit, class "w-full p-6" ]
-                        [ div [ class "flex flex-wrap" ]
-                            [ text "Please check your email for a verification link."
-                            , button [ class "focus:outline-none my-4 text-left p-0 m-0 align-baseline text-blue-500 hover:text-blue-700", type_ "submit" ]
-                                [ text "Click here to resend the email" ]
-                            , div []
-                                [ case props.status of
-                                    Just status ->
-                                        case status of
-                                            True ->
-                                                text "A fresh verification link has been sent to your email address."
+    authContainer "Verify Your Email Address"
+        [ form [ onSubmit <| Submit ]
+            [ div [ class "flex flex-wrap" ]
+                [ text "Please check your email for a verification link."
+                , button [ class authButtonClasses, class "mt-4", type_ "submit" ]
+                    [ text "Click here to resend the email" ]
+                , div [ class "text-indigo-700 mt-4" ]
+                    [ case props.status of
+                        Just status ->
+                            case status of
+                                True ->
+                                    text "A fresh verification link has been sent to your email address."
 
-                                            False ->
-                                                text "Something went wrong."
+                                False ->
+                                    text "Something went wrong."
 
-                                    Nothing ->
-                                        text ""
-                                ]
-                            ]
-                        ]
+                        Nothing ->
+                            text ""
                     ]
                 ]
             ]

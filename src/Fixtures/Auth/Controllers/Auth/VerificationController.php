@@ -9,5 +9,5 @@ class VerificationController extends Controller
 {
     use VerifiesEmails;
 
-    protected $redirectTo = '/webauthn';
+    protected $redirectTo = '/home';
 }

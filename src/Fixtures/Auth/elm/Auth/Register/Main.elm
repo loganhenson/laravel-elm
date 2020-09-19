@@ -1,15 +1,14 @@
 module Auth.Register.Main exposing (..)
 
-import Dict exposing (Dict)
-import Html exposing (Html, button, div, form, input, label, text)
-import Html.Attributes exposing (attribute, class, classList, for, id, type_, value)
-import Html.Events exposing (onInput, onSubmit)
+import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink)
+import Html exposing (Html, button, div, form, text)
+import Html.Attributes exposing (attribute, class, type_)
+import Html.Events exposing (onSubmit)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
 import LaravelElm exposing (Errors, page, receiveNewProps)
-import Maybe exposing (withDefault)
-import Routes exposing (post)
+import Routes exposing (get, post)
 
 
 type alias Props =
@@ -37,6 +36,7 @@ type Msg
     | SetEmail String
     | SetPassword String
     | SetPasswordConfirmation String
+    | Login
 
 
 decodeProps : Decoder Props
@@ -52,12 +52,13 @@ stateFromProps =
 
 main : Program Value (Result Error Model) Msg
 main =
-    LaravelElm.page
+    page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
+        , encodeState = \_ -> Json.Encode.null
         , view = view
         , update = update
-        , subscriptions = \_ -> LaravelElm.receiveNewProps NewProps
+        , subscriptions = \_ -> receiveNewProps NewProps
         , onMount = \_ -> Cmd.none
         }
 
@@ -84,6 +85,9 @@ update msg { props, state } =
         SetPasswordConfirmation newPasswordConfirmation ->
             ( { props = props, state = { state | password_confirmation = newPasswordConfirmation } }, Cmd.none )
 
+        Login ->
+            ( { props = props, state = state }, get Routes.login )
+
         Submit ->
             ( { props = props, state = state }
             , post <|
@@ -103,45 +107,33 @@ update msg { props, state } =
 
 view : Model -> Html Msg
 view { props, state } =
-    div [ class "container mx-auto m-4 p-4" ]
-        [ div [ class "flex flex-wrap justify-center" ]
-            [ div [ class "w-full max-w-sm" ]
-                [ div [ class "flex flex-col break-words bg-white border border-2 rounded shadow-md" ]
-                    [ div [ class "font-semibold bg-indigo-500 text-white py-3 px-6 mb-0" ]
+    div []
+        [ authContainer "Register"
+            [ form [ onSubmit <| Submit ]
+                [ div [ class "flex flex-wrap mb-6" ]
+                    [ authInput SetName state.name props.errors "Name" "name" [ attribute "autofocus" "", attribute "required" "", attribute "autocomplete" "name" ]
+                    , authErrors props.errors "name"
+                    ]
+                , div [ class "flex flex-wrap mb-6" ]
+                    [ authInput SetEmail state.email props.errors "Email" "email" [ attribute "required" "", type_ "email", attribute "autocomplete" "email" ]
+                    , authErrors props.errors "email"
+                    ]
+                , div [ class "flex flex-wrap mb-6" ]
+                    [ authInput SetPassword state.password props.errors "Password" "password" [ attribute "required" "", type_ "password", attribute "autocomplete" "password" ]
+                    , authErrors props.errors "password"
+                    ]
+                , div [ class "flex flex-wrap mb-6" ]
+                    [ authInput SetPasswordConfirmation state.password_confirmation props.errors "Confirm Password" "password_confirmation" [ attribute "required" "", type_ "password" ]
+                    , authErrors props.errors "password_confirmation"
+                    ]
+                , div [ class "flex flex-wrap items-center" ]
+                    [ button [ class authButtonClasses, type_ "submit" ]
                         [ text "Register" ]
-                    , form [ onSubmit <| Submit, class "w-full p-6" ]
-                        [ div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "email" ]
-                                [ text "Name" ]
-                            , input [ onInput SetName, value state.name, attribute "autofocus" "", class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", classList [ ( "border-red-500", Dict.get "name" props.errors |> Maybe.withDefault [] |> List.isEmpty |> not ) ], id "name", attribute "required" "", attribute "autocomplete" "name" ] []
-                            , div [ class "text-red-500 text-xs italic mt-4" ]
-                                (List.map (\error -> div [] [ text error ]) (Dict.get "name" props.errors |> withDefault []))
-                            ]
-                        , div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "email" ]
-                                [ text "E-Mail Address" ]
-                            , input [ onInput SetEmail, value state.email, class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", classList [ ( "border-red-500", Dict.get "email" props.errors |> Maybe.withDefault [] |> List.isEmpty |> not ) ], id "email", attribute "required" "", type_ "email", attribute "autocomplete" "email" ] []
-                            , div [ class "text-red-500 text-xs italic mt-4" ]
-                                (List.map (\error -> div [] [ text error ]) (Dict.get "email" props.errors |> withDefault []))
-                            ]
-                        , div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "password" ]
-                                [ text "Password" ]
-                            , input [ onInput SetPassword, value state.password, class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", classList [ ( "border-red-500", Dict.get "password" props.errors |> Maybe.withDefault [] |> List.isEmpty |> not ) ], id "password", attribute "required" "", type_ "password", attribute "autocomplete" "current-password" ] []
-                            , div [ class "text-red-500 text-xs italic mt-4" ]
-                                (List.map (\error -> div [] [ text error ]) (Dict.get "password" props.errors |> withDefault []))
-                            ]
-                        , div [ class "flex flex-wrap mb-6" ]
-                            [ label [ class "block text-gray-700 text-sm font-bold mb-2", for "password" ]
-                                [ text "Confirm Password" ]
-                            , input [ onInput SetPasswordConfirmation, value state.password_confirmation, class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id "password_confirmation", attribute "required" "", type_ "password" ] []
-                            ]
-                        , div [ class "flex flex-wrap items-center" ]
-                            [ button [ class "inline-block align-middle text-center select-none border font-bold whitespace-no-wrap py-2 px-4 rounded text-base leading-normal no-underline text-gray-100 bg-indigo-500 hover:bg-indigo-700", type_ "submit" ]
-                                [ text "Register" ]
-                            ]
-                        ]
                     ]
                 ]
+            ]
+        , div [ class "w-full text-center" ]
+            [ text "Have an account?"
+            , authLink Login "ml-6" [ text "Sign in" ]
             ]
         ]
