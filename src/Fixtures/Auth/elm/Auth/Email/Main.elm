@@ -1,15 +1,13 @@
 module Auth.Email.Main exposing (..)
 
 import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink, authStatus)
-import Dict exposing (Dict)
-import Html exposing (Html, a, button, div, form, input, label, p, text)
-import Html.Attributes exposing (attribute, class, classList, for, id, type_, value)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html exposing (Html, button, div, form, text)
+import Html.Attributes exposing (attribute, class, type_)
+import Html.Events exposing (onSubmit)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, nullable, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
 import LaravelElm exposing (Errors, page, receiveNewProps)
-import Maybe exposing (withDefault)
 import Routes exposing (get, post)
 
 
@@ -53,7 +51,6 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
-        , encodeState = \_ -> Json.Encode.null
         , update = update
         , view = view
         , subscriptions = \_ -> receiveNewProps NewProps

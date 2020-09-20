@@ -55,7 +55,6 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
-        , encodeState = \_ -> Json.Encode.null
         , view = view
         , update = update
         , subscriptions = \_ -> receiveNewProps NewProps

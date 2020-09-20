@@ -1,15 +1,14 @@
 module Auth.Login.Main exposing (..)
 
 import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink)
-import Html exposing (Html, a, button, div, form, text)
-import Html.Attributes exposing (attribute, class, disabled, type_)
-import Html.Events exposing (onClick, onInput, onSubmit, preventDefaultOn)
-import Json.Decode exposing (Decoder, Error, Value, bool, decodeValue, dict, list, string, succeed)
+import Html exposing (Html, button, div, form, text)
+import Html.Attributes exposing (attribute, class, type_)
+import Html.Events exposing (onSubmit)
+import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
 import LaravelElm exposing (Errors, page, receiveNewProps)
 import Routes exposing (get, post)
-import Tuple exposing (pair)
 
 
 type alias Props =
@@ -56,7 +55,6 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
-        , encodeState = \_ -> Json.Encode.null
         , view = view
         , update = update
         , subscriptions = \_ -> receiveNewProps NewProps

@@ -342,7 +342,7 @@ class Response implements Responsable
                   return
                 }
               }
-                <?php endif ?>
+              <?php endif ?>
 
               // Assumed to be a json response at this point.
               try {
@@ -364,44 +364,32 @@ class Response implements Responsable
               }
             }
 
-            window.addEventListener('elm-ready', () => {
-              if ('sendState' in current.app.ports) {
-                current.app.ports.sendState.subscribe((state) => {
-                  current.state = state
-                  <?php if (config('app.debug')): ?>
-                  sendToDevtools()
-                  <?php endif ?>
-                })
-              }
+            LaravelElm.register('*', (page) => {
+              page.subscribe('sendStateToDevtools', (state) => {
+                current.state = state
+                <?php if (config('app.debug')): ?>
+                sendToDevtools()
+                <?php endif ?>
+              })
 
-              if ('sendScroll' in current.app.ports) {
-                current.app.ports.sendScroll.subscribe(setViewports)
-              }
+              page.subscribe('sendScroll', setViewports)
 
-              if ('get' in current.app.ports) {
-                current.app.ports.get.subscribe(url => {
-                  visit(url)
-                })
-              }
+              page.subscribe('get', url => {
+                visit(url)
+              })
 
-              if ('post' in current.app.ports) {
-                current.app.ports.post.subscribe(({ url, data }) => {
-                  visit(url, { method: 'POST', data })
-                })
-              }
+              page.subscribe('post', ({ url, data }) => {
+                visit(url, { method: 'POST', data })
+              })
 
-              if ('patch' in current.app.ports) {
-                current.app.ports.patch.subscribe(({ url, data }) => {
-                  data._method = 'PATCH'
-                  visit(url, { method: 'POST', data })
-                })
-              }
+              page.subscribe('patch', ({ url, data }) => {
+                data._method = 'PATCH'
+                visit(url, { method: 'POST', data })
+              })
 
-              if ('delete' in current.app.ports) {
-                current.app.ports.delete.subscribe(url => {
-                  visit(url, { method: 'DELETE' })
-                })
-              }
+              page.subscribe('delete', url => {
+                visit(url, { method: 'DELETE' })
+              })
             })
 
             window.addEventListener('popstate', async (e) => {

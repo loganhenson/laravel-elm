@@ -49,7 +49,6 @@ main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
-        , encodeState = \_ -> Json.Encode.null
         , update = update
         , view = view
         , subscriptions = \_ -> receiveNewProps NewProps

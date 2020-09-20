@@ -20,7 +20,7 @@ port receiveNewProps : (Value -> msg) -> Sub msg
 port sendScroll : Value -> Cmd msg
 
 
-port sendState : Value -> Cmd msg
+port sendStateToDevtools : String -> Cmd smg
 
 
 type alias Scroll =
@@ -42,14 +42,13 @@ type alias Viewports =
 page :
     { decodeProps : Decoder props
     , stateFromProps : props -> state
-    , encodeState : state -> Value
     , view : { props : props, state : state } -> Html msg
     , update : msg -> { props : props, state : state } -> ( { props : props, state : state }, Cmd msg )
     , subscriptions : Result Error { props : props, state : state } -> Sub msg
     , onMount : props -> Cmd msg
     }
     -> Program Value (Result Error { props : props, state : state }) msg
-page { decodeProps, stateFromProps, encodeState, view, update, subscriptions, onMount } =
+page { decodeProps, stateFromProps, view, update, subscriptions, onMount } =
     Browser.element
         { init =
             \json ->
@@ -59,7 +58,20 @@ page { decodeProps, stateFromProps, encodeState, view, update, subscriptions, on
                 in
                 case decodedProps of
                     Ok props ->
-                        ( Ok { props = props, state = stateFromProps props }, onMount props )
+                        let
+                            newModel =
+                                { props = props, state = stateFromProps props }
+                        in
+                        ( Ok newModel
+                        , Cmd.batch
+                            [ onMount newModel.props
+
+                            -- DEBUG_TOGGLE
+                            , sendStateToDevtools <| Debug.toString newModel.state
+
+                            -- END_DEBUG_TOGGLE
+                            ]
+                        )
 
                     Err error ->
                         ( Err error, Cmd.none )
@@ -82,24 +94,11 @@ page { decodeProps, stateFromProps, encodeState, view, update, subscriptions, on
                         ( Ok newModel
                         , Cmd.batch
                             [ cmd
-                            , case model.state /= newModel.state of
-                                True ->
-                                    let
-                                        prevEncodedState =
-                                            encodeState model.state
 
-                                        encodedState =
-                                            encodeState newModel.state
-                                    in
-                                    case prevEncodedState /= encodedState of
-                                        True ->
-                                            sendState <| encodeState newModel.state
+                            -- DEBUG_TOGGLE
+                            , sendStateToDevtools <| Debug.toString newModel.state
 
-                                        False ->
-                                            Cmd.none
-
-                                False ->
-                                    Cmd.none
+                            -- END_DEBUG_TOGGLE
                             ]
                         )
 
