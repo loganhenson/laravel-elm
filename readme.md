@@ -54,7 +54,7 @@ It is magically rendered in your `app.blade.php`!
 ...
 <head>
     ...
-    <link href="{{ mix('/css/main.css') }}" rel="stylesheet">
+    <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
 </head>
 <body>
 @elm
