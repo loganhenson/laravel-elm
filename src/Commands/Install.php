@@ -14,7 +14,7 @@ class Install extends Command
 
     public function handle()
     {
-        $this->ensureInitialized();
+        $this->ensureInitialized(true);
 
         // Install NPM packages...
         $this->updateNodePackages(function ($packages) {

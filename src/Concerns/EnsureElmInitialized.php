@@ -4,12 +4,17 @@ namespace Tightenco\Elm\Concerns;
 
 trait EnsureElmInitialized
 {
-    private function ensureInitialized()
+    private function ensureInitialized($installing = false)
     {
         $elmPath = resource_path('elm');
 
         if (! is_dir($elmPath)) {
             mkdir($elmPath, 0755, true);
+        }
+
+        $elmGitIgnorePath = $elmPath . '/.gitignore';
+        if (! is_file($elmGitIgnorePath)) {
+            file_put_contents($elmGitIgnorePath, 'elm-stuff');
         }
 
         $laravelElmStuffPath = $elmPath . '/laravel-elm-stuff';
@@ -23,12 +28,12 @@ trait EnsureElmInitialized
         }
 
         $elmJsonPath = $elmPath . '/elm.json';
-        if (! is_file($elmJsonPath)) {
+        if (! is_file($elmJsonPath) || $installing) {
             copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);
         }
 
         $laravelElmPath = $laravelElmStuffPath . '/LaravelElm.elm';
-        if (! is_file($laravelElmPath)) {
+        if (! is_file($laravelElmPath) || $installing) {
             copy(__DIR__ . '/../Fixtures/LaravelElm.elm', $laravelElmPath);
         }
 
