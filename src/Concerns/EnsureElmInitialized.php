@@ -28,7 +28,7 @@ trait EnsureElmInitialized
         }
 
         $elmJsonPath = $elmPath . '/elm.json';
-        if (! is_file($elmJsonPath) || $installing) {
+        if (! is_file($elmJsonPath)) {
             copy(__DIR__ . '/../Fixtures/elm.json', $elmJsonPath);
         }
 
