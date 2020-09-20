@@ -26,6 +26,11 @@ class Routes extends Command
         return lcfirst(str_replace(' ', '', ucwords(preg_replace("/[^A-Za-z0-9 ]/", ' ', $name))));
     }
 
+    private function normalizeRouteUri(string $uri)
+    {
+        return str_replace('?', '', $uri);
+    }
+
     private function generateTypeDefFromParams(array $params)
     {
         return array_reduce($params, function ($def, $param) {
@@ -36,7 +41,8 @@ class Routes extends Command
     private function generateParamNamesFromParams(array $params)
     {
         return array_reduce($params, function ($paramList, $param) {
-            return $paramList . "{$param} ";
+            $normalizedParam = str_replace('?', '', $param);
+            return $paramList . "{$normalizedParam} ";
         }, ' ');
     }
 
@@ -50,16 +56,16 @@ class Routes extends Command
         })->toArray();
 
         ob_start(); ?>
-<?php foreach ($routes as $name => $route): ?>
-<?= $this->normalizeRouteName($name) ?> :<?= $this->generateTypeDefFromParams($route['params']) ?>String
-<?= $this->normalizeRouteName($name) ?><?= $this->generateParamNamesFromParams($route['params']) ?>=
-    "/<?= $route['uri'] ?>"
-<?php foreach ($route['params'] as $param): ?>
-        |> String.replace "{<?= $param ?>}" <?= $param ?>
-<?php endforeach ?>
+        <?php foreach ($routes as $name => $route): ?>
+        <?= $this->normalizeRouteName($name) ?> :<?= $this->generateTypeDefFromParams($route['params']) ?>String
+        <?= $this->normalizeRouteName($name) ?><?= $this->generateParamNamesFromParams($route['params']) ?>=
+        "/<?= $this->normalizeRouteUri($route['uri']) ?>"
+        <?php foreach ($route['params'] as $param): ?>
+            |> String.replace "{<?= $param ?>}" <?= $param ?>
+        <?php endforeach ?>
 
 
-<?php endforeach ?>
+    <?php endforeach ?>
         <?php $elmRoutes = ob_get_clean();
 
         return str_replace('ROUTES', $elmRoutes, file_get_contents(__DIR__ . '/../Fixtures/Routes.elm'));
