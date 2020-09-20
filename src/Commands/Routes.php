@@ -55,19 +55,34 @@ class Routes extends Command
                 });
         })->toArray();
 
-        ob_start(); ?>
-        <?php foreach ($routes as $name => $route): ?>
-        <?= $this->normalizeRouteName($name) ?> :<?= $this->generateTypeDefFromParams($route['params']) ?>String
-        <?= $this->normalizeRouteName($name) ?><?= $this->generateParamNamesFromParams($route['params']) ?>=
-        "/<?= $this->normalizeRouteUri($route['uri']) ?>"
-        <?php foreach ($route['params'] as $param): ?>
-            |> String.replace "{<?= $param ?>}" <?= $param ?>
-        <?php endforeach ?>
+        $elmRoutes = '';
+
+        foreach ($routes as $name => $route) {
+            $typeSignature = $this->normalizeRouteName($name)
+                . ' :'
+                . $this->generateTypeDefFromParams($route['params'])
+                . 'String';
+
+            $functionAndArgs = $this->normalizeRouteName($name)
+                . $this->generateParamNamesFromParams($route['params'])
+                . '=';
+
+            $functionBody = "    \"/" . $this->normalizeRouteUri($route['uri']) . "\"";
+
+            foreach ($route['params'] as $param) {
+                $functionBody .= "\n        " . "|> String.replace \"{$param}\" {$param}";
+            }
+
+            $elmRoutes .= <<<function
 
 
-    <?php endforeach ?>
-        <?php $elmRoutes = ob_get_clean();
+                {$typeSignature}
+                {$functionAndArgs}
+                {$functionBody}
 
-        return str_replace('ROUTES', $elmRoutes, file_get_contents(__DIR__ . '/../Fixtures/Routes.elm'));
+                function;
+        }
+
+        return str_replace('ROUTES', rtrim($elmRoutes, "\n"), file_get_contents(__DIR__ . '/../Fixtures/Routes.elm'));
     }
 }
