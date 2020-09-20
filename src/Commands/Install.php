@@ -19,9 +19,9 @@ class Install extends Command
         // Install NPM packages...
         $this->updateNodePackages(function ($packages) {
             return [
-                "laravel-elm" => "^3.3.1",
-                "tailwindcss" => "^1.8.2",
-            ] + $packages;
+                    "laravel-elm" => "^3.0.0",
+                    "tailwindcss" => "^1.0.0",
+                ] + $packages;
         });
 
         $this->exportAppCss();
@@ -72,7 +72,7 @@ class Install extends Command
 
         file_put_contents(
             base_path('package.json'),
-            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).PHP_EOL
+            json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
         );
     }
 
