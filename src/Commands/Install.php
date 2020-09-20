@@ -59,12 +59,34 @@ class Install extends Command
 
     protected function exportWebpackConfig()
     {
-        copy(__DIR__ . '/../Fixtures/webpack.mix.js', base_path('webpack.mix.js'));
+        $webpackMixJs = base_path('webpack.mix.js');
+        $putWebpackMixJs = function () use ($webpackMixJs) {
+            copy(__DIR__ . '/../Fixtures/webpack.mix.js', base_path('webpack.mix.js'));
+        };
+
+        if (file_exists($webpackMixJs) && ! $this->option('force')) {
+            if ($this->confirm("The [webpack.mix.js] file already exists. Do you want to replace it?")) {
+                $putWebpackMixJs();
+            }
+        } else {
+            $putWebpackMixJs();
+        }
     }
 
     protected function exportTailwindConfig()
     {
-        copy(__DIR__ . '/../Fixtures/tailwind.config.js', base_path('tailwind.config.js'));
+        $tailwindConfig = base_path('tailwind.config.js');
+        $putTailwindConfig = function () use ($tailwindConfig) {
+            copy(__DIR__ . '/../Fixtures/tailwind.config.js', base_path('tailwind.config.js'));));
+        };
+
+        if (file_exists($tailwindConfig) && ! $this->option('force')) {
+            if ($this->confirm("The [tailwind.config.js] file already exists. Do you want to replace it?")) {
+                $putTailwindConfig();
+            }
+        } else {
+            $putTailwindConfig();
+        }
     }
 
     /**
