@@ -70,7 +70,7 @@ class Routes extends Command
             $functionBody = "    \"/" . $this->normalizeRouteUri($route['uri']) . "\"";
 
             foreach ($route['params'] as $param) {
-                $functionBody .= "\n        " . "|> String.replace \"{$param}\" {$param}";
+                $functionBody .= "\n        " . "|> String.replace \"{{$param}}\" {$param}";
             }
 
             $elmRoutes .= <<<function
