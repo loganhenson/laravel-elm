@@ -24,11 +24,28 @@ class Install extends Command
                 ] + $packages;
         });
 
+        $this->exportAppBladeView();
         $this->exportAppCss();
         $this->exportWebpackConfig();
         $this->exportTailwindConfig();
 
         $this->info('Laravel Elm fully installed & ready. Want an auth setup? Try `php artisan elm:auth`');
+    }
+
+    protected function exportAppBladeView()
+    {
+        $view = resource_path('views/app.blade.php');
+        $putView = function () use ($view) {
+            file_put_contents($view, file_get_contents(__DIR__ . '/../Fixtures/app.blade.php'));
+        };
+
+        if (file_exists($view) && ! $this->option('force')) {
+            if ($this->confirm("The [app.blade.php] file already exists. Do you want to replace it?")) {
+                $putView();
+            }
+        } else {
+            $putView();
+        }
     }
 
     protected function exportAppCss()

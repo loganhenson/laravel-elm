@@ -8,27 +8,34 @@ Want a stable and opinionated platform to build on?
 
 This package makes it seamless.
 
-## Installation
+## Requirements
+- Laravel 8
 
+## Installation
 ```
 composer require tightenco/laravel-elm
 php artisan elm:install
+npm install
 ```
 > Optional Auth Scaffolding (Tailwind)
 ```
 php artisan elm:auth
 ```
 > Then add `Elm::authRoutes()` to your `web.php`
+> Note: Make sure you have run `php artisan migrate`, as this auth scaffold utilizes the default Laravel 8 `users` & `password_resets` tables.
+
+## Watch your elm files just like you would everything else
+> Note: Elm compilation will be drastically faster than you are used to 🔥
+```
+npm run watch
+```
 
 ## Create Your Own Elm Pages
 ```
 php artisan elm:create Example
 ```
+> _creates `resources/elm/Example/Main.elm`_
 
-## Watch your elm files just like you would everything else
-```
-npm run watch
-```
 
 You use the `Elm` facade to render your Elm Pages.
 
