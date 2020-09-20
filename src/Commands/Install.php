@@ -77,7 +77,7 @@ class Install extends Command
     {
         $tailwindConfig = base_path('tailwind.config.js');
         $putTailwindConfig = function () use ($tailwindConfig) {
-            copy(__DIR__ . '/../Fixtures/tailwind.config.js', base_path('tailwind.config.js'));));
+            copy(__DIR__ . '/../Fixtures/tailwind.config.js', base_path('tailwind.config.js'));
         };
 
         if (file_exists($tailwindConfig) && ! $this->option('force')) {
