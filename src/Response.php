@@ -184,6 +184,18 @@ class Response implements Responsable
             window.addEventListener('laravel-elm-devtools-connect', () => {
               sendToDevtools()
             })
+
+            window.addEventListener('reload', async () => {
+              delete (window.Elm)
+              let script = document.createElement('script')
+              script.async = false
+              script.src = '/js/elm.js'
+              document.head.appendChild(script)
+              script.addEventListener('load', function () {
+                setNewPage(current.url, current.page, current.props)
+                script.remove()
+              })
+            })
             <?php endif ?>
 
             function setPage(url, page, props) {
@@ -365,12 +377,12 @@ class Response implements Responsable
             }
 
             LaravelElm.register('*', (page) => {
+              <?php if (config('app.debug')): ?>
               page.subscribe('sendStateToDevtools', (state) => {
                 current.state = state
-                <?php if (config('app.debug')): ?>
                 sendToDevtools()
-                <?php endif ?>
               })
+              <?php endif ?>
 
               page.subscribe('sendScroll', setViewports)
 
