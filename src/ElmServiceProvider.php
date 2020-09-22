@@ -41,7 +41,7 @@ class ElmServiceProvider extends ServiceProvider
             try {
                 $path = mix('/js/elm.min.js');
             } catch (\Exception $e) {
-                $path = '/js/elm.js';
+                $path = '/js/elm-hot.js';
             }
 
             return "<script src=\"{$path}\"></script>" . '{!! $elm !!}';

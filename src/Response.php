@@ -185,7 +185,8 @@ class Response implements Responsable
               sendToDevtools()
             })
 
-            window.addEventListener('reload', async () => {
+            window.addEventListener('laravel-elm-hot-reload-props-only', () => {
+              console.warn('Page state definition has changed, hot-reloading props only')
               delete (window.Elm)
               let script = document.createElement('script')
               script.async = false
@@ -195,6 +196,11 @@ class Response implements Responsable
                 setNewPage(current.url, current.page, current.props)
                 script.remove()
               })
+            })
+
+            window.addEventListener('laravel-elm-hot-reload', async (event) => {
+              delete Elm
+              eval(event.detail)
             })
             <?php endif ?>
 
@@ -318,7 +324,11 @@ class Response implements Responsable
                 'X-Laravel-Elm': true,
                 Accept: 'text/html, application/xhtml+xml',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-XSRF-Token': encrypted_csrf_token_from_cookie(),
+              }
+
+              const xsrf = encrypted_csrf_token_from_cookie()
+              if (xsrf) {
+                headers['X-XSRF-Token'] = xsrf
               }
 
               if (method === 'get') {
