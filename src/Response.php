@@ -169,16 +169,26 @@ class Response implements Responsable
 
             <?php if (config('app.debug')): ?>
             // Hot Reloading.
-            let ws;
-            if (!ws) {
-              ws = new WebSocket(`ws://localhost:3030`)
+            connectWS()
+
+            function connectWS() {
+              let ws = new WebSocket(`ws://localhost:3030`)
+
+              ws.addEventListener('open', function () {
+                console.log('[Laravel Elm Hot Reloading] Client Connected')
+              })
+
+              ws.addEventListener('close', function(e) {
+                console.warn('[Laravel Elm Hot Reloading] Server Not Found. Make sure you have run `npm run watch`, then refresh to reconnect.', e.reason);
+              })
 
               ws.addEventListener('message', function (event) {
-                window.dispatchEvent(new CustomEvent('laravel-elm-hot-reload', { detail: event.data }))
+                delete Elm
+                eval(event.data)
               })
 
               ws.addEventListener('error', function (error) {
-                console.warn('Is `npm run watch` running?')
+                //
               })
             }
 
@@ -210,11 +220,6 @@ class Response implements Responsable
                 setNewPage(current.url, current.page, current.props)
                 script.remove()
               })
-            })
-
-            window.addEventListener('laravel-elm-hot-reload', async (event) => {
-              delete Elm
-              eval(event.detail)
             })
             <?php endif ?>
 
