@@ -168,6 +168,20 @@ class Response implements Responsable
             }
 
             <?php if (config('app.debug')): ?>
+            // Hot Reloading.
+            let ws;
+            if (!ws) {
+              ws = new WebSocket(`ws://localhost:3030`)
+
+              ws.addEventListener('message', function (event) {
+                window.dispatchEvent(new CustomEvent('laravel-elm-hot-reload', { detail: event.data }))
+              })
+
+              ws.addEventListener('error', function (error) {
+                console.warn('Is `npm run watch` running?')
+              })
+            }
+
             function sendToDevtools() {
               window.postMessage({
                 type: 'laravel-elm-devtools',
