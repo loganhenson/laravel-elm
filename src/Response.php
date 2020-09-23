@@ -174,20 +174,23 @@ class Response implements Responsable
             function connectWS() {
               let ws = new WebSocket(`ws://localhost:3030`)
 
-              ws.addEventListener('open', function () {
+              ws.addEventListener('open', () => {
                 console.log('[Laravel Elm Hot Reloading] Client Connected')
               })
 
-              ws.addEventListener('close', function(e) {
-                console.warn('[Laravel Elm Hot Reloading] Server Not Found. Make sure you have run `npm run watch`, then refresh to reconnect.', e.reason);
+              ws.addEventListener('close', (e) => {
+                console.warn(
+                  '[Laravel Elm Hot Reloading] Server Not Found.'
+                  + ' Make sure you have run `npm run watch`, then refresh to reconnect.'
+                  , e.reason
+                )
               })
 
-              ws.addEventListener('message', function (event) {
-                delete Elm
-                eval(event.data)
+              ws.addEventListener('message', (event) => {
+                window.dispatchEvent(new CustomEvent('laravel-elm-hot-reload', { detail: event.data }))
               })
 
-              ws.addEventListener('error', function (error) {
+              ws.addEventListener('error', (error) => {
                 //
               })
             }
@@ -220,6 +223,11 @@ class Response implements Responsable
                 setNewPage(current.url, current.page, current.props)
                 script.remove()
               })
+            })
+
+            window.addEventListener('laravel-elm-hot-reload', async (event) => {
+              delete Elm
+              eval(event.detail)
             })
             <?php endif ?>
 
@@ -383,7 +391,7 @@ class Response implements Responsable
                   return
                 }
               }
-              <?php endif ?>
+                <?php endif ?>
 
               // Assumed to be a json response at this point.
               try {
@@ -411,7 +419,7 @@ class Response implements Responsable
                 current.state = state
                 sendToDevtools()
               })
-              <?php endif ?>
+                <?php endif ?>
 
               page.subscribe('sendScroll', setViewports)
 
