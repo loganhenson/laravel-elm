@@ -114,5 +114,4 @@ class Install extends Command
             json_encode($packages, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL
         );
     }
-
 }

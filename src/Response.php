@@ -3,9 +3,9 @@
 namespace Tightenco\Elm;
 
 use Closure;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Facades\Response as ResponseFactory;
 
 class Response implements Responsable

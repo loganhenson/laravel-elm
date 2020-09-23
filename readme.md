@@ -141,7 +141,7 @@ Install the laravel-elm-devtools extension for chrome
 
 Add this to your tests/TestCase.php setUp method.
 ```php
-$this->withHeaders(['X-Laravel-Elm' => true]);
+$this->withHeaders(['X-Laravel-Elm' => 'true']);
 ```
 
 Now you can test everything via normal Laravel json assertion methods!

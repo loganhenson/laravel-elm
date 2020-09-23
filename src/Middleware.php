@@ -4,11 +4,12 @@ namespace Tightenco\Elm;
 
 use Closure;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 
 class Middleware
 {
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
 

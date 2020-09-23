@@ -92,6 +92,12 @@ class Auth extends Command
             FILE_APPEND
         );
 
-        $this->call('elm:routes');
+        // Call from separate process to ensure the new routes are loaded.
+        // (i.e. we can't do `$this->call('elm:routes')`)
+        $process = Process::fromShellCommandline(
+            'php artisan elm:routes',
+        );
+
+        $process->run();
     }
 }
