@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Response as ResponseFactory;
 class Response implements Responsable
 {
     protected ?string $version;
+    protected bool $debug;
     protected bool $hasSW;
     protected string $page;
     protected array $props;
@@ -20,6 +21,7 @@ class Response implements Responsable
     {
         $manifestPath = public_path('mix-manifest.json');
 
+        $this->debug = config('elm.debug', config('app.debug'));
         $this->version = file_exists($manifestPath) ? md5_file($manifestPath) : null;
         $this->hasSW = file_exists(public_path('sw.js'));
         $this->page = $page;
@@ -130,7 +132,7 @@ class Response implements Responsable
             function sendNewProps(props) {
               current.props = props
               current.app.ports.receiveNewProps.send(props)
-              <?php if (config('app.debug')): ?>
+              <?php if ($this->debug): ?>
               sendToDevtools()
               <?php endif ?>
             }
@@ -167,7 +169,7 @@ class Response implements Responsable
               }
             }
 
-            <?php if (config('app.debug')): ?>
+            <?php if ($this->debug): ?>
             // Hot Reloading.
             connectWS()
 
@@ -245,7 +247,7 @@ class Response implements Responsable
 
               updateHistoryAndUrl(url, page, current.props)
 
-              <?php if (config('app.debug')): ?>
+              <?php if ($this->debug): ?>
               sendToDevtools()
               <?php endif ?>
             }
@@ -383,7 +385,7 @@ class Response implements Responsable
               }
 
               // Handle dd() responses (200, but start with a script tag)
-              <?php if (config('app.debug')): ?>
+              <?php if ($this->debug): ?>
               if (!result.headers.has('x-laravel-elm')) {
                 const response = await result.clone().text()
                 if (response.indexOf('<script>') === 0) {
@@ -391,7 +393,7 @@ class Response implements Responsable
                   return
                 }
               }
-                <?php endif ?>
+              <?php endif ?>
 
               // Assumed to be a json response at this point.
               try {
@@ -414,7 +416,7 @@ class Response implements Responsable
             }
 
             LaravelElm.register('*', (page) => {
-              <?php if (config('app.debug')): ?>
+              <?php if ($this->debug): ?>
               page.subscribe('sendStateToDevtools', (state) => {
                 current.state = state
                 sendToDevtools()

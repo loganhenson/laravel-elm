@@ -137,6 +137,20 @@ Install the laravel-elm-devtools extension for chrome
 }
 ```
 
+## Configuration
+> You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
+```
+php artisan vendor:publish --tag=elm:config
+```
+> Sets debug to `false`, removing any debug / hot reload code
+Then in `webpack.mix.js` add
+```
+...
+    .elm({debug: false})
+...
+```
+> This disables the generation of debug code & does not start the hot reload server during `npm run watch`
+
 ## Testing
 
 Add this to your tests/TestCase.php setUp method.

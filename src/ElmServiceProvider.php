@@ -37,11 +37,19 @@ class ElmServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->publishes([
+            __DIR__ . '/Fixtures/elm.php' => config_path('elm.php'),
+        ], 'elm:config');
+
         Blade::directive('elm', function () {
             try {
                 $path = mix('/js/elm.min.js');
             } catch (\Exception $e) {
-                $path = '/js/elm-hot.js';
+                if (config('elm.debug', config('app.debug'))) {
+                    $path = '/js/elm-hot.js';
+                } else {
+                    $path = 'js/elm.js';
+                }
             }
 
             return "<script src=\"{$path}\"></script>" . '{!! $elm !!}';
