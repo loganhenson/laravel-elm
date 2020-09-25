@@ -42,9 +42,9 @@ class ElmServiceProvider extends ServiceProvider
         ], 'elm:config');
 
         Blade::directive('elm', function () {
-            try {
+            if (app()->environment() === 'production') {
                 $path = mix('/js/elm.min.js');
-            } catch (\Exception $e) {
+            } else {
                 if (config('elm.debug', config('app.debug'))) {
                     $path = '/js/elm-hot.js';
                 } else {
