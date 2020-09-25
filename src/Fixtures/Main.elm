@@ -1,15 +1,15 @@
 module PAGE.Main exposing (..)
 
-import LaravelElm exposing (page, Errors, decodeErrors, receiveNewProps)
+import LaravelElm exposing (Page, page)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Json.Decode exposing (Decoder, Error, Value, decodeValue, succeed, dict, list, string, int, float, bool)
+import Json.Decode exposing (Decoder, Value, decodeValue, succeed)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
 
 
 type alias Props =
-    { errors : Errors, loading : Bool }
+    {}
 
 
 type alias State =
@@ -30,8 +30,6 @@ type Msg
 decodeProps : Decoder Props
 decodeProps =
     succeed Props
-        |> required "errors" decodeErrors
-        |> required "loading" bool
 
 
 stateFromProps : Props -> State
@@ -39,15 +37,14 @@ stateFromProps props =
     {}
 
 
-main : Program Value (Result Error Model) Msg
+main : Page Model Msg
 main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
         , update = update
         , view = view
-        , subscriptions = \_ -> receiveNewProps NewProps
-        , onMount = \_ -> Cmd.none
+        , newPropsMsg = NewProps
         }
 
 
@@ -55,7 +52,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
     case msg of
         NewProps newProps ->
-            ( { props = Result.withDefault props <| decodeValue decodeProps newProps
+            ( { props = Result.withDefault props (decodeValue decodeProps newProps)
               , state = state
               }
             , Cmd.none

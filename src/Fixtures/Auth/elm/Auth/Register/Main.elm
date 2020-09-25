@@ -7,7 +7,7 @@ import Html.Events exposing (onSubmit)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
-import LaravelElm exposing (Errors, page, receiveNewProps)
+import LaravelElm exposing (Errors, Page, page)
 import Routes exposing (get, post)
 
 
@@ -46,19 +46,18 @@ decodeProps =
 
 
 stateFromProps : Props -> State
-stateFromProps =
-    \_ -> { name = "", email = "", password = "", password_confirmation = "" }
+stateFromProps props =
+    { name = "", email = "", password = "", password_confirmation = "" }
 
 
-main : Program Value (Result Error Model) Msg
+main : Page Model Msg
 main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
         , view = view
         , update = update
-        , subscriptions = \_ -> receiveNewProps NewProps
-        , onMount = \_ -> Cmd.none
+        , newPropsMsg = NewProps
         }
 
 
@@ -66,7 +65,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
     case msg of
         NewProps newProps ->
-            ( { props = Result.withDefault props <| decodeValue decodeProps newProps
+            ( { props = Result.withDefault props (decodeValue decodeProps newProps)
               , state = state
               }
             , Cmd.none

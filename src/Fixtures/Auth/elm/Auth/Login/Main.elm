@@ -7,7 +7,7 @@ import Html.Events exposing (onSubmit)
 import Json.Decode exposing (Decoder, Error, Value, decodeValue, dict, list, string, succeed)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode
-import LaravelElm exposing (Errors, page, receiveNewProps)
+import LaravelElm exposing (Errors, Page, page)
 import Routes exposing (get, post)
 
 
@@ -43,22 +43,20 @@ decodeProps =
 
 
 stateFromProps : Props -> State
-stateFromProps =
-    \_ ->
-        { email = ""
-        , password = ""
-        }
+stateFromProps props =
+    { email = ""
+    , password = ""
+    }
 
 
-main : Program Value (Result Error Model) Msg
+main : Page Model Msg
 main =
     page
         { decodeProps = decodeProps
         , stateFromProps = stateFromProps
         , view = view
         , update = update
-        , subscriptions = \_ -> receiveNewProps NewProps
-        , onMount = \_ -> Cmd.none
+        , newPropsMsg = NewProps
         }
 
 
@@ -66,7 +64,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
     case msg of
         NewProps newProps ->
-            ( { props = Result.withDefault props <| decodeValue decodeProps newProps
+            ( { props = Result.withDefault props (decodeValue decodeProps newProps)
               , state = state
               }
             , Cmd.none
@@ -103,7 +101,7 @@ view : Model -> Html Msg
 view { props, state } =
     div []
         [ authContainer "Sign in to your account"
-            [ form [ onSubmit <| Submit ]
+            [ form [ onSubmit Submit ]
                 [ div [ class "flex flex-wrap mb-6" ]
                     [ authInput SetEmail state.email props.errors "Email" "email" [ attribute "autofocus" "", attribute "required" "", type_ "email", attribute "autocomplete" "email" ]
                     , authErrors props.errors "email"
