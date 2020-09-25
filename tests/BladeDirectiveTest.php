@@ -27,8 +27,11 @@ class BladeDirectiveTest extends TestCase
     }
 
     /** @test */
-    function elm_min_js_is_the_src_if_there_is_a_elm_min_js_file_in_the_manifest()
+    function elm_min_js_is_the_in_production()
     {
+        $this->app->detectEnvironment(function () {
+            return 'production';
+        });
         $this->app->instance('path.public', __DIR__ . '/fixtures/public_with_mix_manifest_minified');
 
         $directives = Blade::getCustomDirectives();
