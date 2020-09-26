@@ -150,7 +150,7 @@ class Response implements Responsable
                 return
               }
 
-              current.app = app.Main.init({
+              current.app = app.init({
                 node: current.element,
                 flags: props,
               })
