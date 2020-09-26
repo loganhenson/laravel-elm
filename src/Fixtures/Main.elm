@@ -4,8 +4,6 @@ import LaravelElm exposing (Page, page)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (Decoder, Value, decodeValue, succeed)
-import Json.Decode.Pipeline exposing (required)
-import Json.Encode
 
 
 type alias Props =
