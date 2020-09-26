@@ -1,4 +1,4 @@
-module Auth.Reset.Main exposing (..)
+module Auth.Reset exposing (..)
 
 import Auth.Layout exposing (authContainer, authErrors, authInput)
 import Html exposing (Html, button, div, form, text)

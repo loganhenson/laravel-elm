@@ -1,4 +1,4 @@
-module Auth.Verify.Main exposing (..)
+module Auth.Verify exposing (..)
 
 import Auth.Layout exposing (authButtonClasses, authContainer)
 import Html exposing (Html, button, div, form, text)

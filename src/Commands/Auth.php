@@ -16,7 +16,8 @@ class Auth extends Command
     public function handle()
     {
         $this->ensureInitialized();
-        $this->exportViews();
+        $this->exportPages();
+        $this->exportSrc();
         $this->exportHomeControllerAndView();
         $this->exportAuthControllers();
         $this->exportRoutes();
@@ -24,7 +25,7 @@ class Auth extends Command
         $this->info('Authentication scaffolding generated successfully.');
     }
 
-    protected function exportViews()
+    protected function exportPages()
     {
         $authDirPath = resource_path('elm/pages/Auth');
 
@@ -39,7 +40,28 @@ class Auth extends Command
         }
 
         $process = Process::fromShellCommandline(
-            'cp -R ' . realpath(__DIR__ . '/../Fixtures/Auth/elm/Auth') . "/* {$authDirPath}",
+            'cp -R ' . realpath(__DIR__ . '/../Fixtures/Auth/elm/pages/Auth') . "/* {$authDirPath}",
+        );
+
+        $process->run();
+    }
+
+    protected function exportSrc()
+    {
+        $srcAuthDirPath = resource_path('elm/src/Auth');
+
+        if (is_dir($srcAuthDirPath) && ! $this->option('force')) {
+            if (! $this->confirm("[{$srcAuthDirPath}] already exists. Do you want to replace it?")) {
+                return;
+            }
+        }
+
+        if (! is_dir($srcAuthDirPath)) {
+            mkdir($srcAuthDirPath, 0755, true);
+        }
+
+        $process = Process::fromShellCommandline(
+            'cp -R ' . realpath(__DIR__ . '/../Fixtures/Auth/elm/src/Auth') . "/* {$srcAuthDirPath}",
         );
 
         $process->run();

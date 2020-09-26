@@ -1,4 +1,4 @@
-module Auth.Login.Main exposing (..)
+module Auth.Login exposing (..)
 
 import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink)
 import Html exposing (Html, button, div, form, text)

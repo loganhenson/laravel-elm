@@ -1,4 +1,4 @@
-module PAGE.Main exposing (..)
+module PAGE exposing (..)
 
 import LaravelElm exposing (Page, page)
 import Html exposing (Html, div, text)

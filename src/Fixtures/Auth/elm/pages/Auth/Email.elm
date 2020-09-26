@@ -1,4 +1,4 @@
-module Auth.Email.Main exposing (..)
+module Auth.Email exposing (..)
 
 import Auth.Layout exposing (authButtonClasses, authContainer, authErrors, authInput, authLink, authStatus)
 import Html exposing (Html, button, div, form, text)
