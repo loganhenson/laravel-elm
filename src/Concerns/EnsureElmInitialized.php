@@ -22,6 +22,11 @@ trait EnsureElmInitialized
             mkdir($laravelElmStuffPath, 0755, true);
         }
 
+        $laravelElmPagesPath = $elmPath . '/pages';
+        if (! is_dir($laravelElmPagesPath)) {
+            mkdir($laravelElmPagesPath, 0755, true);
+        }
+
         $laravelElmSrcPath = $elmPath . '/src';
         if (! is_dir($laravelElmSrcPath)) {
             mkdir($laravelElmSrcPath, 0755, true);

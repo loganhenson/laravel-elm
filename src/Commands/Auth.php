@@ -26,7 +26,7 @@ class Auth extends Command
 
     protected function exportViews()
     {
-        $authDirPath = resource_path('elm/Auth');
+        $authDirPath = resource_path('elm/pages/Auth');
 
         if (is_dir($authDirPath) && ! $this->option('force')) {
             if (! $this->confirm("[{$authDirPath}] already exists. Do you want to replace it?")) {

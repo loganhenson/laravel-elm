@@ -20,12 +20,12 @@ class Create extends Command
 
         $page = Str::studly($this->argument('page'));
 
-        $mainDir = resource_path('elm/' . $page);
+        $mainDir = resource_path('elm/pages/' . $page);
         if (! is_dir($mainDir)) {
             mkdir($mainDir, 0755, true);
         }
 
-        file_put_contents(resource_path("elm/{$page}/Main.elm"), $this->makePage($page));
+        file_put_contents(resource_path("elm/pages/{$page}/Main.elm"), $this->makePage($page));
     }
 
     private function makePage(string $page)

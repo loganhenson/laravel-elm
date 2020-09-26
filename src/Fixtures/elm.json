@@ -1,7 +1,7 @@
 {
   "type": "application",
   "source-directories": [
-    ".",
+    "pages",
     "laravel-elm-stuff",
     "src"
   ],
