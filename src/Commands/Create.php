@@ -18,14 +18,16 @@ class Create extends Command
     {
         $this->ensureInitialized();
 
-        $page = Str::studly($this->argument('page'));
+        $relativePath = Str::studly(str_replace('.', '/', str_replace('.elm', '', $this->argument('page'))));
+        $moduleName = str_replace('/', '.', $relativePath);
+        $fullFilePath = resource_path("elm/pages/{$relativePath}.elm");
 
-        $mainDir = resource_path('elm/pages/' . $page);
-        if (! is_dir($mainDir)) {
-            mkdir($mainDir, 0755, true);
+        $dir = dirname($fullFilePath);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
         }
 
-        file_put_contents(resource_path("elm/pages/{$page}/Main.elm"), $this->makePage($page));
+        file_put_contents($fullFilePath, $this->makePage($moduleName));
     }
 
     private function makePage(string $page)
