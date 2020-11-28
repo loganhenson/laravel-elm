@@ -20,7 +20,7 @@ class Install extends Command
         $this->updateNodePackages(function ($packages) {
             return [
                     "laravel-elm" => "^3.0.0",
-                    "tailwindcss" => "^1.0.0",
+                    "tailwindcss" => "^2.0.0",
                 ] + $packages;
         });
 
