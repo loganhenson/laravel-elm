@@ -102,7 +102,7 @@ use Tightenco\Elm\Elm;
 ```
 
 ## Ports
-> Talk back and forth from JS & Elm easily (if you have to)
+> Talk back and forth from JS & Elm easily
 `resources/elm/ExamplePage.elm`
 ```elm
 port module ExamplePage exposing (..)
@@ -126,7 +126,7 @@ LaravelElm.register("ExamplePage", page => {
 Install the laravel-elm-devtools extension for chrome
 
 ## Updating Assets
-> Elm uses a service worker to ensure the latest assets are used. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
+> Laravel Elm uses a service worker to ensure the latest assets are used in production. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
 ```json
 {
   "scripts": {
@@ -139,11 +139,8 @@ Install the laravel-elm-devtools extension for chrome
 
 ## Configuration
 > You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
-```
-php artisan vendor:publish --tag=elm:config
-```
-> Sets debug to `false`, removing any debug / hot reload code
-Then in `webpack.mix.js` add
+- Create an `elm.php` Laravel config file and set `debug` to `false`
+- Then in `webpack.mix.js` add
 ```
 ...
     .elm({debug: false})
