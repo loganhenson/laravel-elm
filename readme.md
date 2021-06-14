@@ -1,6 +1,6 @@
 ![Laravel Elm logo](https://raw.githubusercontent.com/tightenco/laravel-elm/master/laravel-elm-banner.png)
 
-# A Platform for Elm on Laravel 
+# A Platform for Elm on Laravel
 
 Tired of the paradox of choice and constant churn on the frontend?
 
@@ -10,6 +10,24 @@ This package makes it seamless.
 
 ## Requirements
 - Laravel 8
+
+## Docs
+
+- [Installation](#installation)
+- [Creating a page](#Creating-a-page)
+- [Pass values to your page](#Pass-values-to-your-pages)
+- [Or share values with all your pages](#Or-share-values-with-all-your-pages)
+- [Interop with Javascript](#Interop-with-Javascript)
+- [Debugging](#Debugging)
+    * [Laravel errors](#Laravel-errors)
+    * [Devtools](#Devtools) (Coming soon!)
+- [Deploying](#Deploying)
+    * [Updating Assets](#Updating-assets)
+- [Configuration](#Configuration)
+    * [Hot reloading](#Hot-reloading)
+- [Testing](#Testing)
+    * [Laravel tests](#Laravel-tests)
+
 
 ## Installation
 ```
@@ -30,7 +48,7 @@ php artisan elm:auth
 npm run watch
 ```
 
-## Create Your Own Elm Pages
+## Creating a page
 ```
 php artisan elm:create Example
 ```
@@ -65,7 +83,7 @@ It is magically rendered in your `app.blade.php`!
 
 > Hello, Example!
 
-## You pass props to your Elm Pages
+## Pass values to your page
 
 ```php
 use Tightenco\Elm\Elm;
@@ -81,7 +99,7 @@ public function index()
 }
 ```
 
-## Or share values with all your Elm Pages
+## Or share values with all your pages
 
 `AppServiceProvider.php`
 ```php
@@ -101,8 +119,8 @@ use Tightenco\Elm\Elm;
 ...
 ```
 
-## Ports
-> Talk back and forth from JS & Elm easily
+## Interop with Javascript
+> Talk back and forth from JS & Elm
 `resources/elm/ExamplePage.elm`
 ```elm
 port module ExamplePage exposing (..)
@@ -123,9 +141,16 @@ LaravelElm.register("ExamplePage", page => {
 ```
 
 ## Debugging
-Install the laravel-elm-devtools extension for chrome
 
-## Updating Assets
+### Laravel errors
+> Laravel errors are displayed in a modal on the frontend during development, using the same ignition error page that you are used to!
+
+### DevTools
+> Coming soon!
+
+### Deploying
+
+## Updating assets
 > Laravel Elm uses a service worker to ensure the latest assets are used in production. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
 ```json
 {
@@ -138,6 +163,8 @@ Install the laravel-elm-devtools extension for chrome
 ```
 
 ## Configuration
+
+### Hot reloading
 > You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
 - Create an `elm.php` Laravel config file and set `debug` to `false`
 - Then in `webpack.mix.js` add
@@ -149,6 +176,8 @@ Install the laravel-elm-devtools extension for chrome
 > This disables the generation of debug code & does not start the hot reload server during `npm run watch`
 
 ## Testing
+
+### Laravel tests
 
 Add this to your tests/TestCase.php setUp method.
 ```php
