@@ -18,7 +18,7 @@ This package makes it seamless.
 
 > Some Elm knowledge required from here on!
 > 
-> [Elm learning resources]((#Some-Elm-knowledge-required-from-here-on!))
+> [Elm learning resources](#Some-Elm-knowledge-required-from-here-on!)
 
 - [Pass values to your page](#Pass-values-to-your-page)
 - [Share values with all your pages](#Share-values-with-all-your-pages)
