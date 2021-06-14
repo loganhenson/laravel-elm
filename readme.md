@@ -15,70 +15,68 @@ This package makes it seamless.
 
 - [Installation](#installation)
 - [Creating a page](#Creating-a-page)
-- [Pass values to your page](#Pass-values-to-your-pages)
+- [Pass values to your page](#Pass-values-to-your-page)
 - [Or share values with all your pages](#Or-share-values-with-all-your-pages)
 - [Interop with Javascript](#Interop-with-Javascript)
 - [Debugging](#Debugging)
-    * [Laravel errors](#Laravel-errors)
-    * [Devtools](#Devtools) (Coming soon!)
+  * [Laravel errors](#Laravel-errors)
+  * [Devtools](#Devtools) (Coming soon!)
 - [Deploying](#Deploying)
-    * [Updating Assets](#Updating-assets)
+  * [Updating Assets](#Updating-assets)
 - [Configuration](#Configuration)
-    * [Hot reloading](#Hot-reloading)
+  * [Hot reloading](#Hot-reloading)
 - [Testing](#Testing)
-    * [Laravel tests](#Laravel-tests)
+  * [Laravel tests](#Laravel-tests)
 
 
 ## Installation
+- Ensure you have an 8.x Laravel app ready (https://laravel.com/docs/8.x/installation)
+- Now add the laravel-elm package
 ```
 composer require tightenco/laravel-elm
+```
+- Run the elm:install command, this will:
+  - add the npm companion package for Laravel Elm
+  - setup your webpack.mix.js for Laravel Elm
+  - setup your tailwind.config.js for Laravel Elm
+```
 php artisan elm:install
+```
+- Install the new npm dependencies
+```
 npm install
 ```
 > Optional Auth Scaffolding (Tailwind)
+- Run the elm:auth command, this will:
+  - add all the routes & Elm pages for basic login/registration
+  - add `Elm::authRoutes()` to your `web.php`
+  - setup `app.blade.php` with the js script includes
 ```
 php artisan elm:auth
 ```
-> Then add `Elm::authRoutes()` to your `web.php`
-> Note: Make sure you have run `php artisan migrate`, as this auth scaffold utilizes the default Laravel 8 `users` & `password_resets` tables.
+> Note: Don't forget to run `php artisan migrate`!
 
-## Watch your elm files just like you would everything else
+### Watch your elm files just like you would everything else
 > Note: Elm compilation will be drastically faster than you are used to 🔥
 ```
 npm run watch
 ```
+> And open your local site! (`valet link && valet open`)
+> Try going to `/login` or `/register`!
 
 ## Creating a page
 ```
-php artisan elm:create Example
+php artisan elm:create Welcome
 ```
-> _creates `resources/elm/Example/Main.elm`_
+> _this creates `resources/elm/Example/Welcome.elm`_
 
+Now use the `Elm` facade to render your Elm Page!
 
-You use the `Elm` facade to render your Elm Pages.
-
+> web.php
 ```php
-use Tightenco\Elm\Elm;
-...
-public function index()
-{
-    return Elm::render('Example');
-}
-```
-
-It is magically rendered in your `app.blade.php`!
-(`elm:install` sets up your `app.blade.php` so don't worry about adding the `@elm` directive manually if you don't want to.)
-```blade
-...
-<head>
-    ...
-    <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
-</head>
-<body>
-@elm
-<script src="{{ mix('/js/app.js') }}"></script>
-</body>
-...
+Route::get('/', function () {
+    return Elm::render('Welcome');
+});
 ```
 
 > Hello, Example!
@@ -132,11 +130,11 @@ port receiveEmail : (Value -> msg) -> Sub msg
 ```
 ```js
 LaravelElm.register("ExamplePage", page => {
-    page.send("receiveEmail", localStorage.getItem("email"))
+  page.send("receiveEmail", localStorage.getItem("email"))
 
-    page.subscribe("saveEmail", email => {
-        localStorage.setItem("email", email);
-    });
+  page.subscribe("saveEmail", email => {
+    localStorage.setItem("email", email);
+  });
 });
 ```
 
