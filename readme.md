@@ -16,7 +16,7 @@ This package makes it seamless.
 - [Installation](#installation)
 - [Creating a page](#Creating-a-page)
 - [Pass values to your page](#Pass-values-to-your-page)
-- [Or share values with all your pages](#Or-share-values-with-all-your-pages)
+- [Share values with all your pages](#Share-values-with-all-your-pages)
 - [Interop with Javascript](#Interop-with-Javascript)
 - [Debugging](#Debugging)
   * [Laravel errors](#Laravel-errors)
