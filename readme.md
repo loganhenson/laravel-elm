@@ -228,9 +228,9 @@ LaravelElm.register("ExamplePage", page => {
 ### DevTools
 > Coming soon!
 
-### Deploying
+## Deploying
 
-## Updating assets
+### Updating assets
 > Laravel Elm uses a service worker to ensure the latest assets are used in production. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
 ```json
 {
