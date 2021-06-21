@@ -22,6 +22,7 @@ This package makes it seamless.
 
 - [Pass values to your page](#Pass-values-to-your-page)
 - [Share values with all your pages](#Share-values-with-all-your-pages)
+- [Routing](#Routing)
 - [Interop with Javascript](#Interop-with-Javascript)
 - [Debugging](#Debugging)
   * [Laravel errors](#Laravel-errors)
@@ -68,6 +69,10 @@ npm run watch
 ```
 > And open your local site! (`valet link && valet open`)
 > Try going to `/login` or `/register`!
+
+> General assets note!
+> 
+> You can add `public/js` and `public/css` to your `.gitignore` if you wish to avoid committing these built files!
 
 ## Creating a page
 ```
@@ -204,6 +209,26 @@ use Tightenco\Elm\Elm;
 ...
 ```
 
+## Routing
+
+Routing in Laravel Elm is handled completely by your Laravel routes!
+
+However, we can _use_ those routes in our Elm code in a built in way.
+
+1. Add a route, for example, our Welcome page:
+```php
+Route::get('/', function () {
+    return Elm::render('Welcome');
+});
+```
+2. Run the `elm:routes` command to generate the Elm routes file
+> `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+```bash
+php artisan elm:routes
+```
+3. Now we can send users to this page from Elm!
+
+
 ## Interop with Javascript
 > Talk back and forth from JS & Elm
 `resources/elm/ExamplePage.elm`
@@ -263,13 +288,29 @@ LaravelElm.register("ExamplePage", page => {
 ## Testing
 
 ### Laravel tests
+All your normal http tests function identically to how they do in a vanilla Laravel app.
 
-Add this to your tests/TestCase.php setUp method.
+But if we want to assert against the props that are sent to Elm, we can add the `X-Laravel-Elm` header to our `tests/TestCase.php` `setUp` method:
 ```php
-$this->withHeaders(['X-Laravel-Elm' => 'true']);
+<?php
+
+namespace Tests;
+
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+
+abstract class TestCase extends BaseTestCase
+{
+    use CreatesApplication;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->withHeaders(['X-Laravel-Elm' => 'true']);
+    }
+}
 ```
 
-Now you can test everything via normal Laravel json assertion methods!
+Now we can test everything via normal Laravel json assertion methods!
 ```php
 $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 ```

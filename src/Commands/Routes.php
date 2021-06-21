@@ -18,7 +18,9 @@ class Routes extends Command
     {
         $this->ensureInitialized();
 
-        file_put_contents(resource_path("elm/laravel-elm-stuff/Routes.elm"), $this->makeRoutes());
+        file_put_contents(resource_path("elm/laravel-elm-stuff/Routes.elm"), $this->makeRoutes(
+            $this->getRoutes()
+        ));
     }
 
     private function normalizeRouteName(string $name)
@@ -46,15 +48,18 @@ class Routes extends Command
         }, ' ');
     }
 
-    private function makeRoutes()
+    private function getRoutes()
     {
-        $routes = collect(app('router')->getRoutes()->getRoutesByName())->map(function (Route $route) {
+        return collect(app('router')->getRoutes()->getRoutesByName())->map(function (Route $route) {
             return collect($route)->only(['uri', 'methods'])
                 ->when(method_exists($route, 'bindingFields'), function ($collection) use ($route) {
                     return $collection->put('params', $route->parameterNames());
                 });
         })->toArray();
+    }
 
+    public function makeRoutes(array $routes)
+    {
         $elmRoutes = '';
 
         foreach ($routes as $name => $route) {
@@ -67,7 +72,7 @@ class Routes extends Command
                 . $this->generateParamNamesFromParams($route['params'])
                 . '=';
 
-            $functionBody = "    \"/" . $this->normalizeRouteUri($route['uri']) . "\"";
+            $functionBody = "    \"" . $this->normalizeRouteUri($route['uri']) . "\"";
 
             foreach ($route['params'] as $param) {
                 $functionBody .= "\n        " . "|> String.replace \"{{$param}}\" {$param}";

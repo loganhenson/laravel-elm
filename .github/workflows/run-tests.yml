@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        php: ['8.0']
+        os: [ubuntu-latest, macos-latest]
+        dependency-version: [prefer-lowest, prefer-stable]
+        include:
+          - phpunit: '9.*'
+
+    name: PHP ${{ matrix.php }}, ${{ matrix.dependency-version }}, ${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ matrix.dependency-version }}-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ matrix.dependency-version }}-
+            ${{ runner.os }}-php-${{ matrix.php }}-composer-
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_sqlite
+
+      - name: Install dependencies
+        run: |
+          composer require phpunit/phpunit:${{ matrix.phpunit }} --no-update --no-interaction
+          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+
+      - name: Execute tests
+        run: vendor/bin/phpunit
