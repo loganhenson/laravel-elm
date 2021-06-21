@@ -237,22 +237,43 @@ Routing in Laravel Elm is handled completely by your Laravel routes!
 
 However, we can _use_ those routes in our Elm code in a built in way.
 
-1. Add a route, for example, our Welcome page:
+1. Add a route, for example, our Welcome page, with a `name`:
 
 ```php
 Route::get('/', function () {
     return Elm::render('Welcome');
-});
+})->name('welcome');
 ```
 
 2. Run the `elm:routes` command to generate the Elm routes file
-   > `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+> `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
 
 ```bash
 php artisan elm:routes
 ```
 
-3. Now we can send users to this page from Elm!
+3. Now we can send users to this page from Elm in our `update` handlers:
+> Send the user to `/`
+```elm
+Routes.get Routes.welcome
+```
+
+> Or even post some data to an endpoint:
+> 
+> `POST /todos` with the `"description"` of `"add more docs"`
+```elm
+Routes.post <|
+  Json.Encode.object
+      [ ( "url", Json.Encode.string <| Routes.todosStore )
+      , ( "data"
+        , Json.Encode.object
+              [ ( "description", Json.Encode.string "add more docs" )
+              ]
+        )
+      ]
+```
+
+
 
 ## Interop with Javascript
 
