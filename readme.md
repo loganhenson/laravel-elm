@@ -263,13 +263,29 @@ LaravelElm.register("ExamplePage", page => {
 ## Testing
 
 ### Laravel tests
+All your normal http tests function identically to how they do in a vanilla Laravel app.
 
-Add this to your tests/TestCase.php setUp method.
+But if we want to assert against the props that are sent to Elm, we can add the `X-Laravel-Elm` header to our `tests/TestCase.php` `setUp` method:
 ```php
-$this->withHeaders(['X-Laravel-Elm' => 'true']);
+<?php
+
+namespace Tests;
+
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+
+abstract class TestCase extends BaseTestCase
+{
+    use CreatesApplication;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->withHeaders(['X-Laravel-Elm' => 'true']);
+    }
+}
 ```
 
-Now you can test everything via normal Laravel json assertion methods!
+Now we can test everything via normal Laravel json assertion methods!
 ```php
 $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 ```
