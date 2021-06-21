@@ -69,6 +69,10 @@ npm run watch
 > And open your local site! (`valet link && valet open`)
 > Try going to `/login` or `/register`!
 
+> General assets note!
+> 
+> You can add `public/js` and `public/css` to your `.gitignore` if you wish to avoid committing these built files!
+
 ## Creating a page
 ```
 php artisan elm:create Welcome
