@@ -22,6 +22,7 @@ This package makes it seamless.
 
 - [Pass values to your page](#Pass-values-to-your-page)
 - [Share values with all your pages](#Share-values-with-all-your-pages)
+- [Routing](#Routing)
 - [Interop with Javascript](#Interop-with-Javascript)
 - [Debugging](#Debugging)
   * [Laravel errors](#Laravel-errors)
@@ -207,6 +208,26 @@ use Tightenco\Elm\Elm;
     }
 ...
 ```
+
+## Routing
+
+Routing in Laravel Elm is handled completely by your Laravel routes!
+
+However, we can _use_ those routes in our Elm code in a built in way.
+
+1. Add a route, for example, our Welcome page:
+```php
+Route::get('/', function () {
+    return Elm::render('Welcome');
+});
+```
+2. Run the `elm:routes` command to generate the Elm routes file
+> `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+```bash
+php artisan elm:routes
+```
+3. Now we can send users to this page from Elm!
+
 
 ## Interop with Javascript
 > Talk back and forth from JS & Elm
