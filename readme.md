@@ -9,6 +9,7 @@ Want a stable and opinionated platform to build on?
 This package makes it seamless.
 
 ## Requirements
+
 - Laravel 8
 
 ## Docs
@@ -17,7 +18,7 @@ This package makes it seamless.
 - [Creating a page](#Creating-a-page)
 
 > Some Elm knowledge required from here on!
-> 
+>
 > [Elm learning resources](#Some-Elm-knowledge-required-from-here-on)
 
 - [Pass values to your page](#Pass-values-to-your-page)
@@ -25,64 +26,79 @@ This package makes it seamless.
 - [Routing](#Routing)
 - [Interop with Javascript](#Interop-with-Javascript)
 - [Debugging](#Debugging)
-  * [Laravel errors](#Laravel-errors)
-  * [Devtools](#Devtools) (Coming soon!)
+  - [Laravel errors](#Laravel-errors)
+  - [Devtools](#Devtools) (Coming soon!)
 - [Deploying](#Deploying)
-  * [Updating Assets](#Updating-assets)
+  - [Updating Assets](#Updating-assets)
 - [Configuration](#Configuration)
-  * [Hot reloading](#Hot-reloading)
+  - [Hot reloading](#Hot-reloading)
 - [Testing](#Testing)
-  * [Laravel tests](#Laravel-tests)
-
+  - [Laravel tests](#Laravel-tests)
 
 ## Installation
+
 - Ensure you have an 8.x Laravel app ready (https://laravel.com/docs/8.x/installation)
 - Now add the laravel-elm package
+
 ```
 composer require tightenco/laravel-elm
 ```
+
 - Run the elm:install command, this will:
   - add the npm companion package for Laravel Elm
   - setup your webpack.mix.js for Laravel Elm
   - setup your tailwind.config.js for Laravel Elm
+
 ```
 php artisan elm:install
 ```
+
 - Install the new npm dependencies
+
 ```
 npm install
 ```
+
 > Optional Auth Scaffolding (Tailwind)
+
 - Run the elm:auth command, this will:
   - add all the routes & Elm pages for basic login/registration
   - add `Elm::authRoutes()` to your `web.php`
   - setup `app.blade.php` with the js script includes
+
 ```
 php artisan elm:auth
 ```
+
 > Note: Don't forget to run `php artisan migrate`!
 
 ### Watch your elm files just like you would everything else
+
 > Note: Elm compilation will be drastically faster than you are used to 🔥
+
 ```
 npm run watch
 ```
+
 > And open your local site! (`valet link && valet open`)
 > Try going to `/login` or `/register`!
 
 > General assets note!
-> 
+>
 > You can add `public/js` and `public/css` to your `.gitignore` if you wish to avoid committing these built files!
 
 ## Creating a page
+
 ```
 php artisan elm:create Welcome
 ```
+
 > _this creates `resources/elm/Example/Welcome.elm`_
 
 Now use the `Elm` facade to render your Elm Page!
 
 > `routes/web.php`
+
 ```php
 Route::get('/', function () {
     return Elm::render('Welcome');
@@ -92,7 +108,9 @@ Route::get('/', function () {
 > Hello, Example!
 
 # Some Elm knowledge required from here on
+
 > Learning resources
+
 - https://guide.elm-lang.org/
 
 ## Pass values to your page
@@ -100,14 +118,17 @@ Route::get('/', function () {
 > Update your Laravel route:
 >
 > `routes/web.php`
+
 ```php
 Route::get('/', function () {
     return Elm::render('Welcome', ['name' => 'John']);
 });
 ```
+
 > Update your Elm page:
 >
 > `resources/elm/pages/Welcome.elm`
+
 - add imports for decoding to the top
 - add the `name` field to `Props` (`String`)
 - update `decodeProps` with the `name` field
@@ -192,6 +213,7 @@ view { props, state } =
 ## Share values with all your pages
 
 `AppServiceProvider.php`
+
 ```php
 use Tightenco\Elm\Elm;
 ...
@@ -216,22 +238,27 @@ Routing in Laravel Elm is handled completely by your Laravel routes!
 However, we can _use_ those routes in our Elm code in a built in way.
 
 1. Add a route, for example, our Welcome page:
+
 ```php
 Route::get('/', function () {
     return Elm::render('Welcome');
 });
 ```
+
 2. Run the `elm:routes` command to generate the Elm routes file
-> `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+   > `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+
 ```bash
 php artisan elm:routes
 ```
+
 3. Now we can send users to this page from Elm!
 
-
 ## Interop with Javascript
+
 > Talk back and forth from JS & Elm
-`resources/elm/ExamplePage.elm`
+> `resources/elm/ExamplePage.elm`
+
 ```elm
 port module ExamplePage exposing (..)
 
@@ -240,11 +267,12 @@ port saveEmail : String -> Cmd msg
 port receiveEmail : (Value -> msg) -> Sub msg
 ...
 ```
-```js
-LaravelElm.register("ExamplePage", page => {
-  page.send("receiveEmail", localStorage.getItem("email"))
 
-  page.subscribe("saveEmail", email => {
+```js
+LaravelElm.register("ExamplePage", (page) => {
+  page.send("receiveEmail", localStorage.getItem("email"));
+
+  page.subscribe("saveEmail", (email) => {
     localStorage.setItem("email", email);
   });
 });
@@ -253,15 +281,19 @@ LaravelElm.register("ExamplePage", page => {
 ## Debugging
 
 ### Laravel errors
+
 > Laravel errors are displayed in a modal on the frontend during development, using the same ignition error page that you are used to!
 
 ### DevTools
+
 > Coming soon!
 
 ## Deploying
 
 ### Updating assets
+
 > Laravel Elm uses a service worker to ensure the latest assets are used in production. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
+
 ```json
 {
   "scripts": {
@@ -275,22 +307,28 @@ LaravelElm.register("ExamplePage", page => {
 ## Configuration
 
 ### Hot reloading
+
 > You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
+
 - Create an `elm.php` Laravel config file and set `debug` to `false`
 - Then in `webpack.mix.js` add
+
 ```
 ...
     .elm({debug: false})
 ...
 ```
+
 > This disables the generation of debug code & does not start the hot reload server during `npm run watch`
 
 ## Testing
 
 ### Laravel tests
+
 All your normal http tests function identically to how they do in a vanilla Laravel app.
 
 But if we want to assert against the props that are sent to Elm, we can add the `X-Laravel-Elm` header to our `tests/TestCase.php` `setUp` method:
+
 ```php
 <?php
 
@@ -311,6 +349,7 @@ abstract class TestCase extends BaseTestCase
 ```
 
 Now we can test everything via normal Laravel json assertion methods!
+
 ```php
 $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 ```
