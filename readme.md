@@ -24,7 +24,9 @@ This package makes it seamless.
 - [Pass values to your page](#Pass-values-to-your-page)
 - [Share values with all your pages](#Share-values-with-all-your-pages)
 - [Routing](#Routing)
+- [Validation errors](#Validation-errors)
 - [Interop with Javascript](#Interop-with-Javascript)
+- [Progress indicators](#Progress-indicators)
 - [Debugging](#Debugging)
   - [Laravel errors](#Laravel-errors)
   - [Devtools](#Devtools) (Coming soon!)
@@ -276,6 +278,22 @@ Routes.post <|
       ]
 ```
 
+## Validation errors
+
+> The `errors` value is automatically passed to your Elm views, all you need to do is add it to your props to use it!
+
+```elm
+import LaravelElm exposing (Errors)
+
+type alias Props =
+    { errors : Errors }
+
+decodeProps : Decoder Props
+decodeProps =
+    succeed Props
+        |> required "errors" (dict (list string))
+```
+
 ## Interop with Javascript
 
 > Talk back and forth from JS & Elm
@@ -309,6 +327,43 @@ LaravelElm.register("ExamplePage", (page) => {
 ### DevTools
 
 > Coming soon!
+
+## Progress indicators
+
+### In Elm
+> The `loading` prop is automatically passed to all your Elm views, you only
+> need to add it to your props to use it!
+```elm
+type alias Props =
+    { loading : Bool }
+
+decodeProps : Decoder Props
+decodeProps =
+    succeed Props
+        |> required "loading" bool
+```
+
+### In Javascript
+> You can access the loading state in javascript via the `elm-loading` event
+> 
+> Example using nprogress to show a top progress bar:
+> 
+> (after 180ms, so it does not appear for fast connections)
+```js
+import Nprogress from "nprogress";
+
+let loadingTimeout = null;
+Nprogress.configure({ showSpinner: false, minimum: 0.4 });
+window.addEventListener("elm-loading", function({ detail: loading }) {
+    clearTimeout(loadingTimeout);
+
+    if (loading) {
+        loadingTimeout = setTimeout(Nprogress.start, 180);
+    } else {
+        Nprogress.done();
+    }
+});
+```
 
 ## Deploying
 
