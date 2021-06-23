@@ -336,32 +336,42 @@ LaravelElm.register("ExamplePage", (page) => {
 Laravel Elm has built in support for this, by saving the viewport values into the history.
 
 To use it you need to:
+
 - Import the components we need
+
 ```elm
 import LaravelElm exposing (Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
 ```
+
 - Add a `SaveScroll` msg
+
 ```elm
 type Msg
     = NewProps Value
     | NoOp
     | SaveScroll Scroll
 ```
+
 - Add the `viewports` prop
+
 ```elm
 type alias Props =
     { errors : Errors
     , loading : Bool
     , viewports : Viewports }
 ```
+
 - Add the decoder for the `viewports` prop
+
 ```elm
 decodeProps : Decoder Props
 decodeProps =
     Json.Decode.succeed Props
         |> required "viewports" decodeViewports
 ```
-- Make sure we are using the saved viewport positions on mount 
+
+- Make sure we are using the saved viewport positions on mount
+
 ```elm
 main : Program Value (Result Error Model) Msg
 main =
@@ -374,7 +384,9 @@ main =
         , onMount = \props -> setViewports NoOp props.viewports
         }
 ```
+
 - Make sure we are using the saved viewport positions on update
+
 ```elm
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
@@ -391,7 +403,6 @@ update msg { props, state } =
                 Err _ ->
                     ( { props = props, state = state }, Cmd.none )
 ```
-
 
 ## Progress indicators
 
