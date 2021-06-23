@@ -331,8 +331,10 @@ LaravelElm.register("ExamplePage", (page) => {
 ## Progress indicators
 
 ### In Elm
+
 > The `loading` prop is automatically passed to all your Elm views, you only
 > need to add it to your props to use it!
+
 ```elm
 type alias Props =
     { loading : Bool }
@@ -344,24 +346,26 @@ decodeProps =
 ```
 
 ### In Javascript
+
 > You can access the loading state in javascript via the `elm-loading` event
-> 
+>
 > Example using nprogress to show a top progress bar:
-> 
+>
 > (after 180ms, so it does not appear for fast connections)
+
 ```js
 import Nprogress from "nprogress";
 
 let loadingTimeout = null;
 Nprogress.configure({ showSpinner: false, minimum: 0.4 });
-window.addEventListener("elm-loading", function({ detail: loading }) {
-    clearTimeout(loadingTimeout);
+window.addEventListener("elm-loading", function ({ detail: loading }) {
+  clearTimeout(loadingTimeout);
 
-    if (loading) {
-        loadingTimeout = setTimeout(Nprogress.start, 180);
-    } else {
-        Nprogress.done();
-    }
+  if (loading) {
+    loadingTimeout = setTimeout(Nprogress.start, 180);
+  } else {
+    Nprogress.done();
+  }
 });
 ```
 
