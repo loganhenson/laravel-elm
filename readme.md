@@ -1,5 +1,9 @@
 ![Laravel Elm logo](https://raw.githubusercontent.com/tightenco/laravel-elm/master/laravel-elm-banner.png)
 
+<hr>
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/laravel-elm.svg?style=flat-square)](https://packagist.org/packages/tightenco/laravel-elm)
+
 # A Platform for Elm on Laravel
 
 Tired of the paradox of choice and constant churn on the frontend?
