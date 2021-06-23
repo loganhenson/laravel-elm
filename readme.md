@@ -336,42 +336,32 @@ LaravelElm.register("ExamplePage", (page) => {
 Laravel Elm has built in support for this, by saving the viewport values into the history.
 
 To use it you need to:
-
 - Import the components we need
-
 ```elm
 import LaravelElm exposing (Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
 ```
-
 - Add a `SaveScroll` msg
-
 ```elm
 type Msg
     = NewProps Value
     | NoOp
     | SaveScroll Scroll
 ```
-
 - Add the `viewports` prop
-
 ```elm
 type alias Props =
     { errors : Errors
     , loading : Bool
     , viewports : Viewports }
 ```
-
 - Add the decoder for the `viewports` prop
-
 ```elm
 decodeProps : Decoder Props
 decodeProps =
     Json.Decode.succeed Props
         |> required "viewports" decodeViewports
 ```
-
-- Make sure we are using the saved viewport positions on mount
-
+- Make sure we are using the saved viewport positions on mount 
 ```elm
 main : Program Value (Result Error Model) Msg
 main =
@@ -384,9 +374,8 @@ main =
         , onMount = \props -> setViewports NoOp props.viewports
         }
 ```
-
 - Make sure we are using the saved viewport positions on update
-
+- As well as saving the viewport positions on scroll
 ```elm
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { props, state } =
@@ -402,6 +391,19 @@ update msg { props, state } =
 
                 Err _ ->
                     ( { props = props, state = state }, Cmd.none )
+                    
+        SaveScroll scroll ->
+            ( { props = props, state = state }, saveScroll scroll )
+```
+- Finally, use `preserveScroll` on our html element ("key" should be unique for multiple scroll containers)
+```elm
+view : Model -> Html Msg
+view { props, state } =
+    div
+        ([ class "h-full overflow-y-scroll" ]
+            ++ preserveScroll SaveScroll "key"
+        )
+        [ text "long content" ]
 ```
 
 ## Progress indicators
