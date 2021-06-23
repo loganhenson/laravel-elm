@@ -1,0 +1,7 @@
+* text=auto
+
+/.gitignore export-ignore
+/phpunit.xml export-ignore
+/tests export-ignore
+/laravel-elm-banner.png export-ignore
+/.gitattributes export-ignore

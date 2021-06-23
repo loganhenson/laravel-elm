@@ -535,6 +535,19 @@ $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 
 - [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
 
+## Contributing
+
+To get started contributing to Laravel Elm, check out [the contribution guide](CONTRIBUTING.md).
+
+## Credits
+
+- [Logan Henson](https://twitter.com/logan_j_henson)
+- [All contributors](https://github.com/tighten/laravel-elm/contributors)
+
+## Security
+
+If you discover any security related issues, please email <hello@tighten.co> instead of using the issue tracker.
+
 ## License
 
 [View the license](https://github.com/tightenco/laravel-elm/blob/master/LICENSE) for this repo.
