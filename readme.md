@@ -377,6 +377,7 @@ $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 ```
 
 ## Example apps
+
 - [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
 
 ## License
