@@ -52,10 +52,10 @@ This package makes it seamless.
 composer require tightenco/laravel-elm
 ```
 
-- Run the elm:install command, this will:
+- Run the `elm:install` command, this will:
   - add the npm companion package for Laravel Elm
-  - setup your webpack.mix.js for Laravel Elm
-  - setup your tailwind.config.js for Laravel Elm
+  - setup your `webpack.mix.js` for Laravel Elm
+  - setup your `tailwind.config.js` for Laravel Elm
 
 ```
 php artisan elm:install
