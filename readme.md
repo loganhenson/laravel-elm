@@ -26,6 +26,7 @@ This package makes it seamless.
 - [Routing](#Routing)
 - [Validation errors](#Validation-errors)
 - [Interop with Javascript](#Interop-with-Javascript)
+- [Persistent scroll](#Persistent-scroll)
 - [Progress indicators](#Progress-indicators)
 - [Debugging](#Debugging)
   - [Laravel errors](#Laravel-errors)
@@ -327,6 +328,70 @@ LaravelElm.register("ExamplePage", (page) => {
 ### DevTools
 
 > Coming soon!
+
+## Persistent scroll
+
+> Sometimes you want an "app like" preservation of scroll positions while navigating to and from different pages.
+
+Laravel Elm has built in support for this, by saving the viewport values into the history.
+
+To use it you need to:
+- Import the components we need
+```elm
+import LaravelElm exposing (Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
+```
+- Add a `SaveScroll` msg
+```elm
+type Msg
+    = NewProps Value
+    | NoOp
+    | SaveScroll Scroll
+```
+- Add the `viewports` prop
+```elm
+type alias Props =
+    { errors : Errors
+    , loading : Bool
+    , viewports : Viewports }
+```
+- Add the decoder for the `viewports` prop
+```elm
+decodeProps : Decoder Props
+decodeProps =
+    Json.Decode.succeed Props
+        |> required "viewports" decodeViewports
+```
+- Make sure we are using the saved viewport positions on mount 
+```elm
+main : Program Value (Result Error Model) Msg
+main =
+    LaravelElm.pageWithMountAndSubscriptions
+        { decodeProps = decodeProps
+        , stateFromProps = stateFromProps
+        , view = view
+        , update = update
+        , subscriptions = \_ -> receiveNewProps NewProps
+        , onMount = \props -> setViewports NoOp props.viewports
+        }
+```
+- Make sure we are using the saved viewport positions on update
+```elm
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg { props, state } =
+    case msg of
+        NewProps newProps ->
+            case decodeValue decodeProps newProps of
+                Ok decodedProps ->
+                    ( { props = decodedProps
+                      , state = state
+                      }
+                    , setViewports NoOp decodedProps.viewports
+                    )
+
+                Err _ ->
+                    ( { props = props, state = state }, Cmd.none )
+```
+
 
 ## Progress indicators
 
