@@ -14,54 +14,54 @@ This package makes it seamless.
 
 ## Requirements
 
-- Laravel 8
+-   Laravel 8
 
 ## Docs
 
-- [Installation](#installation)
-- [Creating a page](#Creating-a-page)
+-   [Installation](#installation)
+-   [Creating a page](#Creating-a-page)
 
 > Some Elm knowledge required from here on!
 >
 > [Elm learning resources](#Some-Elm-knowledge-required-from-here-on)
 
-- [Pass values to your page](#Pass-values-to-your-page)
-- [Share values with all your pages](#Share-values-with-all-your-pages)
-- [Routing](#Routing)
-- [Validation errors](#Validation-errors)
-- [Interop with Javascript](#Interop-with-Javascript)
-- [Persistent scroll](#Persistent-scroll)
-- [Progress indicators](#Progress-indicators)
-- [Debugging](#Debugging)
-  - [Laravel errors](#Laravel-errors)
-  - [Devtools](#Devtools) (Coming soon!)
-- [Deploying](#Deploying)
-  - [Updating Assets](#Updating-assets)
-- [Configuration](#Configuration)
-  - [Hot reloading](#Hot-reloading)
-- [Testing](#Testing)
-  - [Laravel tests](#Laravel-tests)
-- [Example apps](#Example-apps)
+-   [Pass values to your page](#Pass-values-to-your-page)
+-   [Share values with all your pages](#Share-values-with-all-your-pages)
+-   [Routing](#Routing)
+-   [Validation errors](#Validation-errors)
+-   [Interop with Javascript](#Interop-with-Javascript)
+-   [Persistent scroll](#Persistent-scroll)
+-   [Progress indicators](#Progress-indicators)
+-   [Debugging](#Debugging)
+    -   [Laravel errors](#Laravel-errors)
+    -   [Devtools](#Devtools) (Coming soon!)
+-   [Deploying](#Deploying)
+    -   [Updating Assets](#Updating-assets)
+-   [Configuration](#Configuration)
+    -   [Hot reloading](#Hot-reloading)
+-   [Testing](#Testing)
+    -   [Laravel tests](#Laravel-tests)
+-   [Example apps](#Example-apps)
 
 ## Installation
 
-- Ensure you have an 8.x Laravel app ready (https://laravel.com/docs/8.x/installation)
-- Now add the laravel-elm package
+-   Ensure you have an 8.x Laravel app ready (https://laravel.com/docs/8.x/installation)
+-   Now add the laravel-elm package
 
 ```
 composer require tightenco/laravel-elm
 ```
 
-- Run the `elm:install` command, this will:
-  - add the npm companion package for Laravel Elm
-  - setup your `webpack.mix.js` for Laravel Elm
-  - setup your `tailwind.config.js` for Laravel Elm
+-   Run the `elm:install` command, this will:
+    -   add the npm companion package for Laravel Elm
+    -   setup your `webpack.mix.js` for Laravel Elm
+    -   setup your `tailwind.config.js` for Laravel Elm
 
 ```
 php artisan elm:install
 ```
 
-- Install the new npm dependencies
+-   Install the new npm dependencies
 
 ```
 npm install
@@ -69,10 +69,10 @@ npm install
 
 > Optional Auth Scaffolding (Tailwind)
 
-- Run the elm:auth command, this will:
-  - add all the routes & Elm pages for basic login/registration
-  - add `Elm::authRoutes()` to your `web.php`
-  - setup `app.blade.php` with the js script includes
+-   Run the elm:auth command, this will:
+    -   add all the routes & Elm pages for basic login/registration
+    -   add `Elm::authRoutes()` to your `web.php`
+    -   setup `app.blade.php` with the js script includes
 
 ```
 php artisan elm:auth
@@ -119,7 +119,7 @@ Route::get('/', function () {
 
 > Learning resources
 
-- https://guide.elm-lang.org/
+-   https://guide.elm-lang.org/
 
 ## Pass values to your page
 
@@ -137,10 +137,10 @@ Route::get('/', function () {
 >
 > `resources/elm/pages/Welcome.elm`
 
-- add imports for decoding to the top
-- add the `name` field to `Props` (`String`)
-- update `decodeProps` with the `name` field
-- use `props.name` in your `view` function
+-   add imports for decoding to the top
+-   add the `name` field to `Props` (`String`)
+-   update `decodeProps` with the `name` field
+-   use `props.name` in your `view` function
 
 ```elm
 module Welcome exposing (..)
@@ -254,14 +254,14 @@ Route::get('/', function () {
 ```
 
 2. Run the `elm:routes` command to generate the Elm routes file
-   > `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
+    > `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
 
 ```bash
 php artisan elm:routes
 ```
 
 3. Now we can send users to this page from Elm in our `update` handlers:
-   > Send the user to `/`
+    > Send the user to `/`
 
 ```elm
 Routes.get Routes.welcome
@@ -315,11 +315,11 @@ port receiveEmail : (Value -> msg) -> Sub msg
 
 ```js
 LaravelElm.register("ExamplePage", (page) => {
-  page.send("receiveEmail", localStorage.getItem("email"));
+    page.send("receiveEmail", localStorage.getItem("email"));
 
-  page.subscribe("saveEmail", (email) => {
-    localStorage.setItem("email", email);
-  });
+    page.subscribe("saveEmail", (email) => {
+        localStorage.setItem("email", email);
+    });
 });
 ```
 
@@ -341,13 +341,13 @@ Laravel Elm has built in support for this, by saving the viewport values into th
 
 To use it you need to:
 
-- Import the components we need
+-   Import the components we need
 
 ```elm
 import LaravelElm exposing (Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
 ```
 
-- Add a `SaveScroll` msg
+-   Add a `SaveScroll` msg
 
 ```elm
 type Msg
@@ -356,7 +356,7 @@ type Msg
     | SaveScroll Scroll
 ```
 
-- Add the `viewports` prop
+-   Add the `viewports` prop
 
 ```elm
 type alias Props =
@@ -365,7 +365,7 @@ type alias Props =
     , viewports : Viewports }
 ```
 
-- Add the decoder for the `viewports` prop
+-   Add the decoder for the `viewports` prop
 
 ```elm
 decodeProps : Decoder Props
@@ -374,7 +374,7 @@ decodeProps =
         |> required "viewports" decodeViewports
 ```
 
-- Make sure we are using the saved viewport positions on mount
+-   Make sure we are using the saved viewport positions on mount
 
 ```elm
 main : Program Value (Result Error Model) Msg
@@ -389,8 +389,8 @@ main =
         }
 ```
 
-- Make sure we are using the saved viewport positions on update
-- As well as saving the viewport positions on scroll
+-   Make sure we are using the saved viewport positions on update
+-   As well as saving the viewport positions on scroll
 
 ```elm
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -412,7 +412,7 @@ update msg { props, state } =
             ( { props = props, state = state }, saveScroll scroll )
 ```
 
-- Finally, use `preserveScroll` on our html element ("key" should be unique for multiple scroll containers)
+-   Finally, use `preserveScroll` on our html element ("key" should be unique for multiple scroll containers)
 
 ```elm
 view : Model -> Html Msg
@@ -455,13 +455,13 @@ import Nprogress from "nprogress";
 let loadingTimeout = null;
 Nprogress.configure({ showSpinner: false, minimum: 0.4 });
 window.addEventListener("elm-loading", function ({ detail: loading }) {
-  clearTimeout(loadingTimeout);
+    clearTimeout(loadingTimeout);
 
-  if (loading) {
-    loadingTimeout = setTimeout(Nprogress.start, 180);
-  } else {
-    Nprogress.done();
-  }
+    if (loading) {
+        loadingTimeout = setTimeout(Nprogress.start, 180);
+    } else {
+        Nprogress.done();
+    }
 });
 ```
 
@@ -487,8 +487,8 @@ window.addEventListener("elm-loading", function ({ detail: loading }) {
 
 > You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
 
-- Create an `elm.php` Laravel config file and set `debug` to `false`
-- Then in `webpack.mix.js` add
+-   Create an `elm.php` Laravel config file and set `debug` to `false`
+-   Then in `webpack.mix.js` add
 
 ```
 ...
@@ -533,7 +533,7 @@ $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 
 ## Example apps
 
-- [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
+-   [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
 
 ## Contributing
 
@@ -541,8 +541,8 @@ To get started contributing to Laravel Elm, check out [the contribution guide](C
 
 ## Credits
 
-- [Logan Henson](https://twitter.com/logan_j_henson)
-- [All contributors](https://github.com/tighten/laravel-elm/contributors)
+-   [Logan Henson](https://twitter.com/logan_j_henson)
+-   [All contributors](https://github.com/tighten/laravel-elm/contributors)
 
 ## Security
 
