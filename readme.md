@@ -34,6 +34,7 @@ This package makes it seamless.
   - [Hot reloading](#Hot-reloading)
 - [Testing](#Testing)
   - [Laravel tests](#Laravel-tests)
+- [Example apps](#Example-apps)
 
 ## Installation
 
@@ -374,6 +375,9 @@ Now we can test everything via normal Laravel json assertion methods!
 ```php
 $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 ```
+
+## Example apps
+- [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
 
 ## License
 
