@@ -221,7 +221,7 @@ class Response implements Responsable
               delete (window.Elm)
               let script = document.createElement('script')
               script.async = false
-              script.src = '/js/elm.js'
+              script.src = '/build/assets/elm.js'
               document.head.appendChild(script)
               script.addEventListener('load', function () {
                 setNewPage(current.url, current.page, current.props)

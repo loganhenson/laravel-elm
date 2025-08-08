@@ -57,7 +57,7 @@ composer require tightenco/laravel-elm
 -   Install the npm package
 
 ```
-npm install laravel-elm@^4.0.0
+npm install --save-dev laravel-elm
 ```
 
 -   Configure Vite in `vite.config.js`:
@@ -65,7 +65,7 @@ npm install laravel-elm@^4.0.0
 ```javascript
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import laravelElm from 'laravel-elm/vite';
+import laravelElm from 'laravel-elm';
 
 export default defineConfig({
     plugins: [
@@ -108,7 +108,7 @@ php artisan elm:auth
 > Note: Elm compilation will be drastically faster than you are used to 🔥
 
 ```
-npm run watch
+npm run dev
 ```
 
 > And open your local site! (`valet link && valet open`)
@@ -116,7 +116,7 @@ npm run watch
 
 > General assets note!
 >
-> You can add `public/js` and `public/css` to your `.gitignore` if you wish to avoid committing these built files!
+> You can add `public/build` to your `.gitignore` if you wish to avoid committing these built files!
 
 ## Creating a page
 
@@ -492,16 +492,10 @@ window.addEventListener("elm-loading", function ({ detail: loading }) {
 
 ### Updating assets
 
-> Laravel Elm uses a service worker to ensure the latest assets are used in production. Add the `php artisan elm:sw` to your "prod" command to ensure it gets the latest versions of you assets.
+> Build your assets for production using Vite:
 
-```json
-{
-  "scripts": {
-    ...,
-    "prod": "npm run production;php artisan elm:sw",
-    ...,
-  }
-}
+```bash
+npm run build
 ```
 
 ## Configuration
@@ -510,16 +504,15 @@ window.addEventListener("elm-loading", function ({ detail: loading }) {
 
 > You may want to disable hot reloading & debugging in development if your app is _extremely_ large / complex
 
--   Create an `elm.php` Laravel config file and set `debug` to `false`
--   Then in `webpack.mix.js` add
+Configure the Laravel Elm plugin in your `vite.config.js`:
 
-```
-...
-    .elm({debug: false})
-...
+```javascript
+laravelElm({
+    debug: false, // Disables debug mode and hot reloading
+})
 ```
 
-> This disables the generation of debug code & does not start the hot reload server during `npm run watch`
+> This disables the generation of debug code & does not start the hot reload server during `npm run dev`
 
 ## Testing
 
