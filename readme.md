@@ -14,7 +14,9 @@ This package makes it seamless.
 
 ## Requirements
 
--   Laravel 8
+-   Laravel 12.x+
+-   PHP 8.4 / 8.5
+-   Vite
 
 ## Docs
 
@@ -45,20 +47,41 @@ This package makes it seamless.
 
 ## Installation
 
--   Ensure you have an 8.x Laravel app ready (https://laravel.com/docs/8.x/installation)
--   Now add the laravel-elm package
+-   Ensure you have a Laravel 12+ app ready (https://laravel.com/docs)
+-   Add the laravel-elm package
 
 ```
 composer require tightenco/laravel-elm
 ```
 
--   Run the `elm:install` command, this will:
-    -   add the npm companion package for Laravel Elm
-    -   setup your `webpack.mix.js` for Laravel Elm
-    -   setup your `tailwind.config.js` for Laravel Elm
+-   Install the npm package
 
 ```
-php artisan elm:install
+npm install laravel-elm@^4.0.0
+```
+
+-   Configure Vite in `vite.config.js`:
+
+```javascript
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import laravelElm from 'laravel-elm/vite';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                'resources/js/elm.js',
+            ],
+            refresh: true,
+        }),
+        laravelElm({
+            debug: true,
+        }),
+    ],
+});
 ```
 
 -   Install the new npm dependencies

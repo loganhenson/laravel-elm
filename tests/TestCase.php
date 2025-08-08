@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as Orchestra;
+use PHPUnit\Framework\Attributes\Test;
 use Tightenco\Elm\Elm;
 use Tightenco\Elm\ElmServiceProvider;
 use Tightenco\Elm\Middleware;
@@ -16,6 +17,9 @@ abstract class TestCase extends Orchestra
     public function setUp(): void
     {
         parent::setUp();
+        
+        // Mock Vite for tests
+        $this->withoutVite();
     }
 
     public function getEnvironmentSetUp($app)

@@ -13,10 +13,11 @@
     }
   ],
   "require": {
-    "laravel/framework": "^8.0"
+    "php": "^8.4|^8.5",
+    "laravel/framework": "^12.0"
   },
   "require-dev": {
-    "orchestra/testbench": "^6.0"
+    "orchestra/testbench": "^10.0"
   },
   "extra": {
     "laravel": {

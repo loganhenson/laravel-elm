@@ -2,12 +2,13 @@
 
 namespace Tightenco\Elm\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tightenco\Elm\Commands\Routes;
 
 class RoutesTest extends TestCase
 {
-    /** @test */
-    function base_route_of_single_slash_is_the_same_in_elm_routes_file()
+    #[Test]
+    public function base_route_of_single_slash_is_the_same_in_elm_routes_file()
     {
         $routes = [
             "welcome" => [
@@ -32,8 +33,8 @@ class RoutesTest extends TestCase
         );
     }
 
-    /** @test */
-    function starting_a_route_with_a_slash_includes_a_slash_in_elm()
+    #[Test]
+    public function starting_a_route_with_a_slash_includes_a_slash_in_elm()
     {
         $routes = [
             "test" => [
@@ -58,8 +59,8 @@ class RoutesTest extends TestCase
         );
     }
 
-    /** @test */
-    function not_starting_a_route_with_a_slash_also_follows_that_in_elm()
+    #[Test]
+    public function not_starting_a_route_with_a_slash_also_follows_that_in_elm()
     {
         $routes = [
             "test" => [

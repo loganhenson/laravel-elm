@@ -3,12 +3,13 @@
 namespace Tightenco\Elm\Tests;
 
 use Illuminate\Foundation\Auth\User;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Http\Request;
 
 class ResponseTest extends TestCase
 {
-    /** @test */
-    function can_use_arrayable_as_props()
+    #[Test]
+    public function can_use_arrayable_as_props()
     {
         $this->send(
             Request::create('/users/1'),

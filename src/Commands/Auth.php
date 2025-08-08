@@ -20,6 +20,7 @@ class Auth extends Command
         $this->exportSrc();
         $this->exportHomeControllerAndView();
         $this->exportAuthControllers();
+        $this->exportAppBladeTemplate();
         $this->exportRoutes();
 
         $this->info('Authentication scaffolding generated successfully.');
@@ -104,6 +105,23 @@ class Auth extends Command
         );
 
         $process->run();
+    }
+
+    protected function exportAppBladeTemplate()
+    {
+        $appBladeTemplate = resource_path('views/app.blade.php');
+
+        $putAppBladeTemplate = function () use ($appBladeTemplate) {
+            file_put_contents($appBladeTemplate, file_get_contents(__DIR__ . '/../Fixtures/app.blade.php'));
+        };
+
+        if (file_exists($appBladeTemplate) && ! $this->option('force')) {
+            if ($this->confirm("The [app.blade.php] file already exists. Do you want to replace it?")) {
+                $putAppBladeTemplate();
+            }
+        } else {
+            $putAppBladeTemplate();
+        }
     }
 
     protected function exportRoutes()

@@ -3,6 +3,7 @@
 namespace Tightenco\Elm\Tests;
 
 use Illuminate\Http\JsonResponse;
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateHttpResponse;
 use Illuminate\Support\Facades\Route;
@@ -11,8 +12,8 @@ use Tightenco\Elm\Response;
 
 class MiddlewareTest extends TestCase
 {
-    /** @test */
-    function returns_correct_json_structure()
+    #[Test]
+    public function returns_correct_json_structure()
     {
         $this->send(
             Request::create('/users/1'),
@@ -41,19 +42,24 @@ class MiddlewareTest extends TestCase
             ]);
     }
 
-    /** @test */
-    function returns_version_if_there_is_a_mix_manifest()
+    #[Test]
+    public function returns_version_if_there_is_a_vite_manifest()
     {
-        $this->app->instance('path.public', __DIR__ . '/fixtures/public_with_mix_manifest_non_minified');
+        // Use the existing manifest fixture
+        $publicPath = __DIR__ . '/fixtures/public_with_vite_manifest';
+        $this->app->instance('path.public', $publicPath);
+        
+        // Verify the manifest exists
+        $this->assertTrue(file_exists($publicPath . '/build/manifest.json'), 'Vite manifest file should exist');
 
-        $this->send(
+        $response = $this->send(
             Request::create('/users/1'),
             function () {
                 return elm('Example.Test');
             }
         )->assertSuccessful()
             ->assertJson([
-                'version' => md5_file(__DIR__ . '/fixtures/public_with_mix_manifest_non_minified/mix-manifest.json'),
+                'version' => md5_file($publicPath . '/build/manifest.json'),
                 'page' => 'Example.Test',
                 'props' =>
                     [
@@ -70,8 +76,8 @@ class MiddlewareTest extends TestCase
             ]);
     }
 
-    /** @test */
-    function laravel_elm_requests_return_json()
+    #[Test]
+    public function laravel_elm_requests_return_json()
     {
         $request = Request::create('/users/1');
         $request->headers->add(['X-Laravel-Elm' => 'true']);
@@ -82,8 +88,8 @@ class MiddlewareTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
     }
 
-    /** @test */
-    function laravel_elm_requests_that_have_validation_errors_return_them_as_json_directly()
+    #[Test]
+    public function laravel_elm_requests_that_have_validation_errors_return_them_as_json_directly()
     {
         $this->withExceptionHandling();
 
@@ -112,11 +118,10 @@ class MiddlewareTest extends TestCase
         ]);
     }
 
-    /** @test */
-    function non_laravel_elm_requests_return_normal_response_of_app_blade_with_elm()
+    #[Test]
+    public function non_laravel_elm_requests_return_normal_response_of_app_blade_with_elm()
     {
         $this->app->config->set('app.debug', true);
-        $this->app->instance('path.public', __DIR__ . '/fixtures/public_with_mix_manifest_non_minified');
 
         View::addLocation(__DIR__ . '/../src/Fixtures');
 
@@ -125,7 +130,9 @@ class MiddlewareTest extends TestCase
         $response = new Response('User/Edit', []);
         $response = $response->toResponse($request);
 
-        $this->assertStringContainsString('<script src="/js/elm-hot.js"></script>', $response->getContent());
+        // Check that the response contains the Elm initialization script
+        $this->assertStringContainsString('window.LaravelElm', $response->getContent());
+        $this->assertStringContainsString('setPage(window.location.pathname', $response->getContent());
         $this->assertInstanceOf(IlluminateHttpResponse::class, $response);
     }
 }

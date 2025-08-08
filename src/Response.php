@@ -19,11 +19,13 @@ class Response implements Responsable
 
     public function __construct(string $page, array $props)
     {
-        $manifestPath = public_path('mix-manifest.json');
+        // Use app() to get the proper public path binding
+        $publicPath = app()->make('path.public');
+        $manifestPath = $publicPath . '/build/manifest.json';
 
         $this->debug = config('elm.debug', config('app.debug'));
         $this->version = file_exists($manifestPath) ? md5_file($manifestPath) : null;
-        $this->hasSW = file_exists(public_path('sw.js'));
+        $this->hasSW = file_exists($publicPath . '/sw.js');
         $this->page = $page;
         $this->props = $props;
     }

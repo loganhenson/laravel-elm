@@ -20,15 +20,10 @@
             type="image/x-icon"
         >
         <title>{{ config('app.name', 'Laravel') }}</title>
-        <link
-            href="{{ mix('/css/app.css') }}"
-            rel="stylesheet"
-        >
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/elm.js'])
     </head>
 
     <body class="bg-white max-w-screen-lg mx-auto">
         @elm
-
-        <script src="{{ mix('/js/app.js') }}"></script>
     </body>
 </html>

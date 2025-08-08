@@ -5,6 +5,7 @@ namespace Tightenco\Elm;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Tightenco\Elm\Commands\Auth;
 use Tightenco\Elm\Commands\Create;
@@ -37,18 +38,9 @@ class ElmServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        Blade::directive('elm', function () {
-            if (app()->environment() === 'production') {
-                $path = mix('/js/elm.min.js');
-            } else {
-                if (config('elm.debug', config('app.debug'))) {
-                    $path = '/js/elm-hot.js';
-                } else {
-                    $path = 'js/elm.js';
-                }
-            }
-
-            return "<script src=\"{$path}\"></script>" . '{!! $elm !!}';
+        Blade::directive('elm', function ($expression) {
+            $path = $expression ?: "'resources/js/elm.js'";
+            return "<?php echo app(\Illuminate\Foundation\Vite::class)({$path}); ?>" . '{!! $elm !!}';
         });
 
         Elm::share('errors', function () {

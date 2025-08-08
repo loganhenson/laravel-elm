@@ -2,12 +2,13 @@
 
 namespace Tightenco\Elm\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tightenco\Elm\Elm;
 
 class HelperTest extends TestCase
 {
-    /** @test */
-    function helper_function_is_facade_render()
+    #[Test]
+    public function helper_function_is_facade_render()
     {
         $this->assertEquals(
             elm('Example', ['test' => 'test']),
