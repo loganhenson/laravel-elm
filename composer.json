@@ -1,11 +1,11 @@
 {
   "name": "tightenco/laravel-elm",
   "description": "The Elm Laravel Platform",
+  "license": "MIT",
   "keywords": [
     "laravel",
     "elm"
   ],
-  "license": "MIT",
   "authors": [
     {
       "name": "Logan Henson",
@@ -13,31 +13,33 @@
     }
   ],
   "require": {
-    "php": "^8.4|^8.5",
+    "php": "^8.4 || ^8.5",
     "laravel/framework": "^12.0"
   },
   "require-dev": {
     "orchestra/testbench": "^10.0"
   },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Tightenco\\Elm\\ElmServiceProvider"
-      ],
-      "aliases": {
-        "Elm": "Tightenco\\Elm\\ElmFacade"
-      }
-    }
-  },
   "autoload": {
     "psr-4": {
       "Tightenco\\Elm\\": "src/"
     },
-    "files": ["src/helpers.php"]
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
       "Tightenco\\Elm\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "aliases": {
+        "Elm": "Tightenco\\Elm\\ElmFacade"
+      },
+      "providers": [
+        "Tightenco\\Elm\\ElmServiceProvider"
+      ]
     }
   }
 }
