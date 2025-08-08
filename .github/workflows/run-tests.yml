@@ -11,11 +11,9 @@ jobs:
   test:
     strategy:
       matrix:
-        php: ['8.0']
+        php: ['8.4']
         os: [ubuntu-latest, macos-latest]
         dependency-version: [prefer-lowest, prefer-stable]
-        include:
-          - phpunit: '9.*'
 
     name: PHP ${{ matrix.php }}, ${{ matrix.dependency-version }}, ${{ matrix.os }}
 
@@ -41,9 +39,7 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_sqlite
 
       - name: Install dependencies
-        run: |
-          composer require phpunit/phpunit:${{ matrix.phpunit }} --no-update --no-interaction
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
 
       - name: Execute tests
         run: vendor/bin/phpunit
