@@ -12,6 +12,7 @@ class Response implements Responsable
 {
     protected ?string $version;
     protected bool $debug;
+    protected bool $hot;
     protected bool $hasSW;
     protected string $page;
     protected array $props;
@@ -23,7 +24,9 @@ class Response implements Responsable
         $publicPath = app()->make('path.public');
         $manifestPath = $publicPath . '/build/manifest.json';
 
-        $this->debug = config('elm.debug', config('app.debug'));
+        $this->debug = (bool) (config('elm.debug') ?? config('app.debug'));
+        // Only try to reach the hot reload server while `npm run dev` is running.
+        $this->hot = $this->debug && app(\Illuminate\Foundation\Vite::class)->isRunningHot();
         $this->version = file_exists($manifestPath) ? md5_file($manifestPath) : null;
         $this->hasSW = file_exists($publicPath . '/sw.js');
         $this->page = $page;
@@ -32,6 +35,12 @@ class Response implements Responsable
 
     public function toResponse($request)
     {
+        // An Inertia <Link> / router.visit() to an Elm page: ask Inertia for a full page visit
+        // (the same 409 + X-Inertia-Location response as Inertia::location()).
+        if ($request->header('X-Inertia') && ! $request->header('X-Laravel-Elm')) {
+            return new \Illuminate\Http\Response('', 409, ['X-Inertia-Location' => $request->fullUrl()]);
+        }
+
         $props = array_map(function ($prop) {
             return $prop instanceof Closure ? App::call($prop) : $prop;
         }, $this->props);
@@ -48,7 +57,10 @@ class Response implements Responsable
             ]);
         }
 
-        return ResponseFactory::view('app', $this->viewData + ['elm' => $this->make($props)]);
+        return ResponseFactory::view(
+            config('elm.root_view', 'app'),
+            $this->viewData + ['elm' => $this->make($props)]
+        );
     }
 
     /**
@@ -164,8 +176,10 @@ class Response implements Responsable
                 return
               }
 
+              // Elm takes over (and may replace) the node it is given, so hand it a child of
+              // the #app container; removing the container then always removes the old page.
               current.app = app.init({
-                node: current.element,
+                node: current.element.appendChild(document.createElement('div')),
                 flags: props,
               })
 
@@ -183,7 +197,7 @@ class Response implements Responsable
               }
             }
 
-            <?php if ($this->debug): ?>
+            <?php if ($this->hot): ?>
             // Hot Reloading.
             connectWS()
 
@@ -197,7 +211,7 @@ class Response implements Responsable
               ws.addEventListener('close', (e) => {
                 console.warn(
                   '[Laravel Elm Hot Reloading] Server Not Found.'
-                  + ' Make sure you have run `npm run watch`, then refresh to reconnect.'
+                  + ' Make sure `npm run dev` is running, then refresh to reconnect.'
                   , e.reason
                 )
               })
@@ -210,7 +224,9 @@ class Response implements Responsable
                 //
               })
             }
+            <?php endif ?>
 
+            <?php if ($this->debug): ?>
             function sendToDevtools() {
               window.postMessage({
                 type: 'laravel-elm-devtools',
@@ -408,6 +424,17 @@ class Response implements Responsable
                 }
               }
               <?php endif ?>
+
+              // Any other non laravel-elm response (a plain Blade / Inertia / React page, a file...):
+              // hand over to the browser with a normal page load.
+              if (!result.headers.has('x-laravel-elm')) {
+                if (method === 'get') {
+                  window.location = result.url
+                } else {
+                  console.warn('[Laravel Elm] ' + method.toUpperCase() + ' ' + url + ' did not return a Laravel Elm response (' + result.status + ')')
+                }
+                return
+              }
 
               // Assumed to be a json response at this point.
               try {

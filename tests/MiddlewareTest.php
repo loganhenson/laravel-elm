@@ -147,4 +147,40 @@ class MiddlewareTest extends TestCase
         $this->assertStringNotContainsString('</script><script>alert(1)', $response->getContent());
         $this->assertStringContainsString('\u003C\/script\u003E\u003Cscript\u003Ealert(1)', $response->getContent());
     }
+
+    #[Test]
+    public function validation_errors_work_with_json_session_serialization()
+    {
+        // Laravel 13's skeleton ships 'serialization' => 'json', which turns the
+        // ViewErrorBag into an array when the session is saved.
+        $this->app->config->set('session.serialization', 'json');
+        $this->withExceptionHandling();
+
+        // Real apps start the session in the "web" group, so it is saved
+        // before the (global) laravel-elm middleware sees the response.
+        Route::middleware('web')->group(function () {
+            Route::get('/users', fn () => 'test');
+            Route::post('/users', function (Request $request) {
+                $request->validate(['name' => 'required|string']);
+            });
+        });
+
+        $this->from('/users')
+            ->post('/users', [], ['X-Laravel-Elm' => 'true'])
+            ->assertOk()
+            ->assertHeader('X-Laravel-Elm-Errors', 'true')
+            ->assertExactJson(['errors' => ['name' => ['The name field is required.']]]);
+    }
+
+    #[Test]
+    public function inertia_visits_to_an_elm_page_become_full_page_visits()
+    {
+        $request = Request::create('/elm-page?tab=2');
+        $request->headers->add(['X-Inertia' => 'true']);
+
+        $response = (new Response('Welcome', []))->toResponse($request);
+
+        $this->assertSame(409, $response->getStatusCode());
+        $this->assertSame('http://localhost/elm-page?tab=2', $response->headers->get('X-Inertia-Location'));
+    }
 }

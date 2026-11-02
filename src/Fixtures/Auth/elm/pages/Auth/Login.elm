@@ -71,7 +71,7 @@ update msg { props, state } =
             )
 
         ForgotPassword ->
-            ( { props = props, state = state }, get Routes.passwordUpdate )
+            ( { props = props, state = state }, get Routes.passwordRequest )
 
         Register ->
             ( { props = props, state = state }, get Routes.register )

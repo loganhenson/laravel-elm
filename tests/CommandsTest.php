@@ -38,7 +38,8 @@ class CommandsTest extends TestCase
         $this->assertSame('^1.11.0', $package['devDependencies']['axios']);
         $this->assertSame('^4.3.0', $package['devDependencies']['tailwindcss']);
         $this->assertSame('^4.3.0', $package['devDependencies']['@tailwindcss/vite']);
-        $this->assertSame('^8.0.0', $package['devDependencies']['vite']);
+        // An existing Vite 7 is supported, so it is not force-upgraded.
+        $this->assertSame('^7.0.4', $package['devDependencies']['vite']);
         $this->assertSame('^3.1', $package['devDependencies']['laravel-vite-plugin']);
 
         $this->assertStringContainsString('laravelElm(', file_get_contents($this->sandbox . '/vite.config.js'));
@@ -78,5 +79,43 @@ class CommandsTest extends TestCase
     public function sw_fails_without_a_vite_build()
     {
         $this->artisan('elm:sw')->assertFailed();
+    }
+
+    #[Test]
+    public function create_does_not_overwrite_an_existing_page_without_confirmation()
+    {
+        $this->artisan('elm:create', ['page' => 'Welcome'])->assertSuccessful();
+        $path = $this->sandbox . '/resources/elm/pages/Welcome.elm';
+        file_put_contents($path, 'my work');
+
+        $this->artisan('elm:create', ['page' => 'Welcome'])
+            ->expectsConfirmation('[resources/elm/pages/Welcome.elm] already exists. Do you want to replace it?', 'no')
+            ->assertSuccessful();
+        $this->assertSame('my work', file_get_contents($path));
+
+        $this->artisan('elm:create', ['page' => 'Welcome', '--force' => true])->assertSuccessful();
+        $this->assertStringStartsWith('module Welcome exposing', file_get_contents($path));
+    }
+
+    #[Test]
+    public function auth_scaffolds_pages_controllers_and_routes_once()
+    {
+        (new Filesystem)->makeDirectory($this->sandbox . '/routes', 0755, true);
+        (new Filesystem)->makeDirectory($this->sandbox . '/app/Http/Controllers', 0755, true);
+        file_put_contents($this->sandbox . '/routes/web.php', "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n");
+
+        $this->artisan('elm:auth', ['--force' => true])->assertSuccessful();
+        $this->artisan('elm:auth', ['--force' => true])->assertSuccessful();
+
+        $routes = file_get_contents($this->sandbox . '/routes/web.php');
+        $this->assertSame(1, substr_count($routes, 'Elm::authRoutes();'));
+        $this->assertStringStartsWith("<?php\n\nuse Illuminate\\Support\\Facades\\Route;", $routes);
+
+        $this->assertFileExists($this->sandbox . '/resources/elm/pages/Auth/Login.elm');
+        $this->assertFileExists($this->sandbox . '/resources/elm/src/Auth/Layout.elm');
+        $this->assertStringContainsString('Logout', file_get_contents($this->sandbox . '/resources/elm/pages/Home.elm'));
+        $this->assertFileExists($this->sandbox . '/app/Http/Controllers/Auth/LoginController.php');
+        $this->assertFileExists($this->sandbox . '/app/Http/Controllers/HomeController.php');
+        $this->assertStringContainsString('@elm', file_get_contents($this->sandbox . '/resources/views/app.blade.php'));
     }
 }

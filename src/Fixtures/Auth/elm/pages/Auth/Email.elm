@@ -108,7 +108,7 @@ view { props, state } =
                 ]
             ]
         , div [ class "w-full text-center" ]
-            [ text "Don't have an account?"
-            , authLink BackToLogin "ml-6" [ text "Sign up" ]
+            [ text "Remember your password?"
+            , authLink BackToLogin "ml-6" [ text "Sign in" ]
             ]
         ]

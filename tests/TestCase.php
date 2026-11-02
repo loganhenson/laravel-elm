@@ -26,6 +26,8 @@ abstract class TestCase extends Orchestra
     {
         parent::getEnvironmentSetUp($app);
 
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('k', 32)));
+
         $app->make(Kernel::class)->pushMiddleware(StartSession::class);
     }
 

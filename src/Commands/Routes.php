@@ -30,7 +30,9 @@ class Routes extends Command
 
     private function normalizeRouteUri(string $uri)
     {
-        return str_replace('?', '', $uri);
+        // Laravel route URIs have no leading slash ("password/email"); without one the
+        // browser resolves them relative to the current page (/password/password/email).
+        return '/' . ltrim(str_replace('?', '', $uri), '/');
     }
 
     private function generateTypeDefFromParams(array $params)

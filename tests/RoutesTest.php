@@ -60,7 +60,7 @@ class RoutesTest extends TestCase
     }
 
     #[Test]
-    public function not_starting_a_route_with_a_slash_also_follows_that_in_elm()
+    public function routes_without_a_leading_slash_are_made_absolute()
     {
         $routes = [
             "test" => [
@@ -76,7 +76,31 @@ class RoutesTest extends TestCase
         $expectedRoute = <<<route
             test : String
             test =
-                "test"
+                "/test"
+            route;
+
+        $this->assertStringContainsString(
+            $expectedRoute,
+            (new Routes())->makeRoutes($routes)
+        );
+    }
+
+    #[Test]
+    public function nested_routes_with_params_are_absolute()
+    {
+        $routes = [
+            "password.reset" => [
+                "uri" => "password/reset/{token}",
+                "methods" => ["GET", "HEAD"],
+                "params" => ["token"],
+            ],
+        ];
+
+        $expectedRoute = <<<route
+            passwordReset : String -> String
+            passwordReset token =
+                "/password/reset/{token}"
+                    |> String.replace "{token}" token
             route;
 
         $this->assertStringContainsString(

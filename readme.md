@@ -17,148 +17,328 @@ This package makes it seamless.
 
 -   Laravel 13.x
 -   PHP 8.4+
--   Vite 7 / 8 (Laravel 13 ships Vite 8)
--   Tailwind CSS 4.3+ (for the scaffolding)
+-   Node.js 20.19+ with Vite 7 or 8 (Laravel 13 ships Vite 8; `vite-plus` is supported too)
+-   Elm 0.19.3 (installed for you by the `laravel-elm` npm package)
+-   Tailwind CSS 4.3+ for the scaffolded pages (optional, see [Tailwind alongside existing CSS](#tailwind-alongside-existing-css))
 
 ## Docs
 
--   [Installation](#installation)
--   [Upgrading from tightenco/laravel-elm](#upgrading-from-tightencolaravel-elm)
--   [Creating a page](#Creating-a-page)
+-   [Installation (new app)](#installation-new-app)
+-   [Adding to an existing app](#adding-to-an-existing-app)
+    -   [Alongside React, Vue or Svelte (Inertia)](#alongside-react-vue-or-svelte-inertia)
+    -   [Alongside Livewire, Alpine or Blade](#alongside-livewire-alpine-or-blade)
+    -   [Alongside Angular or any separately built SPA](#alongside-angular-or-any-separately-built-spa)
+    -   [Tailwind alongside existing CSS](#tailwind-alongside-existing-css)
+-   [Upgrading](#upgrading)
+-   [Creating a page](#creating-a-page)
 
 > Some Elm knowledge required from here on!
 >
-> [Elm learning resources](#Some-Elm-knowledge-required-from-here-on)
+> [Elm learning resources](#some-elm-knowledge-required-from-here-on)
 
--   [Pass values to your page](#Pass-values-to-your-page)
--   [Share values with all your pages](#Share-values-with-all-your-pages)
--   [Routing](#Routing)
--   [Validation errors](#Validation-errors)
--   [Interop with Javascript](#Interop-with-Javascript)
--   [Persistent scroll](#Persistent-scroll)
--   [Progress indicators](#Progress-indicators)
--   [Debugging](#Debugging)
-    -   [Laravel errors](#Laravel-errors)
-    -   [Devtools](#Devtools) (Coming soon!)
--   [Deploying](#Deploying)
-    -   [Updating Assets](#Updating-assets)
--   [Configuration](#Configuration)
-    -   [Hot reloading](#Hot-reloading)
--   [Testing](#Testing)
-    -   [Laravel tests](#Laravel-tests)
--   [Example apps](#Example-apps)
+-   [Pass values to your page](#pass-values-to-your-page)
+-   [Share values with all your pages](#share-values-with-all-your-pages)
+-   [Routing](#routing)
+-   [Validation errors](#validation-errors)
+-   [Interop with Javascript](#interop-with-javascript)
+-   [Persistent scroll](#persistent-scroll)
+-   [Progress indicators](#progress-indicators)
+-   [Debugging](#debugging)
+-   [Deploying](#deploying)
+-   [Configuration](#configuration)
+-   [Commands](#commands)
+-   [Testing](#testing)
+-   [Example apps](#example-apps)
 
-## Installation
+## Installation (new app)
 
--   Ensure you have a Laravel 13 app ready (https://laravel.com/docs)
--   Add the laravel-elm package
+1. Create a Laravel 13 app (see https://laravel.com/docs/installation) and `cd` into it
 
+```bash
+laravel new my-app
+cd my-app
 ```
+
+2. Add the package
+
+```bash
 composer require loganhenson/laravel-elm
 ```
 
--   Scaffold Vite, Tailwind & Elm
+3. Install Laravel Elm
 
-```
+```bash
 php artisan elm:install
 ```
 
-> This adds `laravel-elm`, `tailwindcss@^4.3`, `@tailwindcss/vite@^4.3`, `vite@^8` & `laravel-vite-plugin@^3.1`
-> to your `package.json`, and publishes `vite.config.js`, `resources/css/app.css`, `resources/views/app.blade.php`
-> and the `resources/elm` directory (pass `--force` to overwrite without prompting).
+> `elm:install` only adds what is missing, it never throws away your config:
+>
+> -   **`package.json`**: adds `laravel-elm` (and, when your app uses Tailwind 4 or has no Vite config yet,
+>     `tailwindcss` / `@tailwindcss/vite` `^4.3`, `vite` `^8`, `laravel-vite-plugin` `^3.1`). Existing versions
+>     are only bumped within their major version.
+> -   **`vite.config.js` / `.ts`**: adds `import laravelElm from 'laravel-elm'`, the `laravelElm()` plugin and the
+>     `resources/js/elm.js` entry (your fonts, plugins and other options are kept).
+> -   **`resources/css/app.css`**: adds `@source '../elm/**/*.elm';` so Tailwind sees the classes in your Elm pages.
+> -   **`resources/views/app.blade.php`**: created if missing; this is the Blade view Elm pages render into.
+> -   **`resources/elm/`**: `elm.json` (Elm 0.19.3) and the `LaravelElm` support module.
+> -   **`.gitignore`**: ignores `resources/js/elm.js`, which the Vite plugin generates.
 
-The published `vite.config.js` looks like this:
+4. Install the npm dependencies
 
-```javascript
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import tailwindcss from '@tailwindcss/vite';
-import laravelElm from 'laravel-elm';
-
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-                'resources/js/elm.js',
-            ],
-            refresh: true,
-        }),
-        tailwindcss(),
-        laravelElm({
-            debug: true,
-        }),
-    ],
-});
-```
-
--   Install the npm dependencies
-
-```
+```bash
 npm install
 ```
 
-> **npm 12+:** dependency install scripts are blocked by default, and the `elm` npm package needs its
-> install script to download the Elm compiler. Allow it once with `npm install-scripts approve elm`.
+> This also installs the Elm compiler for your platform (macOS, Linux and Windows; x64 and arm64).
+> npm 12 may warn that `elm`'s install script was blocked: that's harmless, the compiler still runs
+> (`npm install-scripts approve elm` silences it).
 
-> Optional Auth Scaffolding (Tailwind)
+5. Create a page, or scaffold authentication
 
--   Run the elm:auth command, this will:
-    -   add all the routes & Elm pages for basic login/registration
-    -   add `Elm::authRoutes()` to your `web.php`
-    -   setup `app.blade.php` with the js script includes
-
+```bash
+php artisan elm:create Welcome
 ```
+
+> Then render it from a route, see [Creating a page](#creating-a-page).
+
+**Or**, for a complete login / registration / password reset / email verification setup (Tailwind styled):
+
+```bash
 php artisan elm:auth
+php artisan migrate
 ```
 
-> Note: Don't forget to run `php artisan migrate`!
+> `elm:auth` adds the Elm pages and controllers, a `Home` page with a log out button, and
+> `Elm::authRoutes()` (plus the `/home` route) to `routes/web.php`. Only use it in an app that doesn't
+> already have authentication (e.g. not on top of a starter kit's Fortify auth).
 
-### Watch your elm files just like you would everything else
+6. Run it
 
-> Note: Elm compilation will be drastically faster than you are used to 🔥
-
+```bash
+composer run dev
 ```
-npm run dev
-```
 
-> And open your local site! (`php artisan serve`, Herd, Valet, ...)
-> Try going to `/login` or `/register`!
-
-> General assets note!
+> This starts `php artisan serve` (http://localhost:8000) and `npm run dev` (Vite + Elm compilation +
+> hot reloading) together. Using Herd or Valet? Just run `npm run dev`.
 >
-> You can add `public/build` to your `.gitignore` if you wish to avoid committing these built files!
+> Try `/register`, `/login`, or the page you created!
 
-## Upgrading from tightenco/laravel-elm
+## Adding to an existing app
+
+The steps are the same as for a [new app](#installation-new-app): `composer require loganhenson/laravel-elm`,
+`php artisan elm:install`, `npm install`, then `php artisan elm:create SomePage`.
+
+`elm:install` is built to be run on an existing app:
+
+-   It edits your `vite.config.js`/`.ts` in place (including `vite-plus` configs using
+    `plugins: lazyPlugins(() => [...])`, whose `lint`/`fmt` `ignorePatterns` also get the generated files).
+    If it can't recognise your config it changes nothing and prints the three lines to add:
+
+```javascript
+import laravelElm from 'laravel-elm';
+
+// ...
+plugins: [
+    laravelElm(),
+    laravel({ input: [/* your entries */, 'resources/js/elm.js'] }),
+    // ...your other plugins
+],
+```
+
+-   If `resources/views/app.blade.php` already exists for something else (an Inertia root view, your main
+    layout...), it is **left alone**: Elm pages get their own `resources/views/elm.blade.php`, and
+    `config/elm.php` is published with `'root_view' => 'elm'`. Customize that view freely (add your
+    favicon, fonts, a dark mode class...), it just needs to keep the `@elm` directive inside `<body>`.
+-   Tailwind 3 or no Tailwind at all: it doesn't install or change Tailwind, see
+    [Tailwind alongside existing CSS](#tailwind-alongside-existing-css).
+-   Don't run `elm:auth` if your app already has authentication; build your Elm pages with `elm:create`
+    and pass the current user to them with [`Elm::share`](#share-values-with-all-your-pages).
+
+How Laravel Elm coexists with everything else:
+
+-   Elm pages are ordinary Laravel routes that `return Elm::render('Page')`. Everything else in your app is
+    untouched.
+-   The Laravel Elm middleware only acts on requests sent by Laravel Elm itself (the `X-Laravel-Elm`
+    header), so Inertia, Livewire and API requests pass straight through.
+-   Each Elm page renders into the root view (`config('elm.root_view')`), which loads only the assets you
+    list in it plus `resources/js/elm.js` (`@elm`). The current Elm page mounts in a `<div id="app">`
+    appended to `<body>`, so don't load another framework that mounts onto `#app` in that view.
+-   Laravel Elm uses Laravel's normal session, CSRF (`XSRF-TOKEN` cookie) and auth, shared with the rest of
+    your app.
+
+### Alongside React, Vue or Svelte (Inertia)
+
+Tested with the Laravel 13 React starter kit (Inertia, React 19, TypeScript, `vite-plus`, Tailwind 4):
+
+```bash
+composer require loganhenson/laravel-elm
+php artisan elm:install
+npm install
+php artisan elm:create Reports
+```
+
+```php
+// routes/web.php
+use LoganHenson\Elm\Elm;
+
+Route::get('/reports', fn () => Elm::render('Reports'))->middleware('auth')->name('reports');
+```
+
+```bash
+php artisan elm:routes
+```
+
+-   Your Inertia `app.blade.php` stays as it is; Elm pages render into `resources/views/elm.blade.php`,
+    which loads your `resources/css/app.css` (so they share your Tailwind theme) but not your
+    `app.tsx`/`app.ts`.
+-   Navigating **from Inertia to Elm**: `<Link href="/reports">` and `router.visit('/reports')` work; Laravel
+    Elm answers Inertia's request with a `409` + `X-Inertia-Location` (like `Inertia::location()`), so Inertia
+    does a full page visit to the Elm page.
+-   Navigating **from Elm to Inertia**: `Routes.get Routes.dashboard` (or any non Elm URL) does a full page
+    load of that page.
+-   `npm run check` / `vp check` keep passing: `resources/js/elm.js` and `resources/elm/**` are added to
+    the `lint` and `fmt` ignore lists. With a separate ESLint/Prettier setup, add `resources/js/elm.js`
+    to your ignores (`.prettierignore` is updated automatically when it exists).
+
+### Alongside Livewire, Alpine or Blade
+
+Tested with the Laravel 13 Livewire starter kit. There is no conflict to resolve: Blade and Livewire pages
+keep their layouts, Elm pages use the root view. If you want Alpine (or any small script) on your Elm
+pages too, add its entry to the root view's `@vite([...])`; keep it away from the `#app` element Elm owns.
+
+### Alongside Angular or any separately built SPA
+
+Angular (Angular CLI) and similar SPAs are built by their own tooling rather than Vite, and are usually
+served from their own path, e.g. a catch-all route returning the SPA's `index.html`:
+
+```php
+// routes/web.php — register your Elm routes BEFORE the SPA catch-all
+Route::get('/reports', fn () => Elm::render('Reports'));
+
+Route::view('/app/{any?}', 'angular')->where('any', '.*');
+```
+
+-   Keep the SPA's catch-all from swallowing your Elm routes (register Elm routes first, or scope the
+    catch-all to a prefix like `/app`).
+-   Move between the SPA and Elm pages with normal links (full page loads); both share the same Laravel
+    session and auth.
+-   If your SPA is built with Vite (e.g. Analog, Vue, Svelte, Solid without Inertia), add `laravelElm()` and
+    `resources/js/elm.js` to that Vite config like any other entry.
+
+### Tailwind alongside existing CSS
+
+The scaffolded pages (`elm:auth`, `elm:create`) use Tailwind 4 classes. Pick the setup that fits your app:
+
+**Your app already uses Tailwind 4**: nothing to do, `elm:install` added `@source '../elm/**/*.elm';`.
+
+**Your app uses Tailwind 3**: add your Elm files to `content` in `tailwind.config.js` (the root view loads
+your `resources/css/app.css`):
+
+```javascript
+content: [
+    // ...
+    './resources/elm/**/*.elm',
+],
+```
+
+**Your app has other CSS (Bootstrap, Bulma, your own...) and no Tailwind.** First add Tailwind:
+
+```bash
+npm install --save-dev tailwindcss@^4.3 @tailwindcss/vite@^4.3
+```
+
+```javascript
+// vite.config.js
+import tailwindcss from '@tailwindcss/vite';
+// ...
+plugins: [laravelElm(), tailwindcss(), laravel({ /* ... */ })],
+```
+
+then either:
+
+_A) Give Elm pages their own stylesheet (recommended, nothing can clash)._ Create `resources/css/elm.css`:
+
+```css
+@import 'tailwindcss';
+
+@source '../elm/**/*.elm';
+```
+
+add `'resources/css/elm.css'` to the `input` array in `vite.config.js`, and load **only** it in your Elm
+root view: `@vite(['resources/css/elm.css'])`.
+
+_B) Use Tailwind on the same pages as your existing CSS: prefix it and skip its reset._ Create
+`resources/css/elm.css`:
+
+```css
+/*
+ * - prefix(tw):    classes are tw:flex, tw:hover:bg-blue-600, tw:md:p-8 ... (no clashes with your class names)
+ * - no preflight:  Tailwind's reset is not loaded, so it doesn't restyle the rest of the page
+ * - no layer(...): utilities stay unlayered, so they win over your (unlayered) CSS by normal specificity
+ *                  and order. Layered rules always lose to unlayered ones.
+ */
+@import 'tailwindcss/theme.css' prefix(tw);
+@import 'tailwindcss/utilities.css' prefix(tw);
+
+@source '../elm/**/*.elm';
+```
+
+add `'resources/css/elm.css'` to `input` in `vite.config.js`, and load it **after** your existing CSS in the
+root view:
+
+```blade
+@vite(['resources/css/app.css', 'resources/css/elm.css'])
+```
+
+Then mix both freely in Elm:
+
+```elm
+button [ class "btn btn-primary tw:ml-4 tw:hover:opacity-50" ] [ text "Save" ]
+```
+
+> With the prefix, every Tailwind class needs it (variants go after it: `tw:md:hover:underline`), so the
+> unprefixed classes in the `elm:auth` pages won't apply until you prefix them.
+
+## Upgrading
+
+### From 6.0
+
+-   `composer update loganhenson/laravel-elm` and `npm install --save-dev laravel-elm@^4.1.1`
+-   Regenerate your routes: `php artisan elm:routes` (route helpers now return absolute paths such as
+    `"/password/email"`; before they were relative, which broke posting from nested URLs). If you worked
+    around that by prefixing helpers yourself (`"/" ++ Routes.foodsEdit id`), remove the prefix, otherwise
+    the URL becomes `//foods/...`.
+-   Use Elm 0.19.3: set `"elm-version": "0.19.3"` in `resources/elm/elm.json` (no code changes needed)
+
+### From tightenco/laravel-elm
 
 `tightenco/laravel-elm` is abandoned; this package is its continuation (same author, same repo).
 
 -   Swap the package:
 
-```
+```bash
 composer remove tightenco/laravel-elm
 composer require loganhenson/laravel-elm
 ```
 
 -   Rename the PHP namespace `Tightenco\Elm` to `LoganHenson\Elm` in your app, e.g.
 
-```
+```bash
 grep -rl 'Tightenco\\Elm' app routes tests | xargs sed -i.bak 's/Tightenco\\Elm/LoganHenson\\Elm/g'
 ```
 
 > (the `Elm` facade alias is unchanged, so `Elm::render(...)` in routes keeps working)
 
--   Bump the npm package: `npm install --save-dev laravel-elm@^4.1` (adds Vite 8 support)
--   Requirements are now Laravel 13 and PHP 8.4+
+-   Then follow [From 6.0](#from-60) above. Requirements are now Laravel 13 and PHP 8.4+.
 
 ## Creating a page
 
-```
+```bash
 php artisan elm:create Welcome
 ```
 
-> _this creates `resources/elm/Example/Welcome.elm`_
+> _this creates `resources/elm/pages/Welcome.elm`_ (`elm:create Admin.Users` creates
+> `resources/elm/pages/Admin/Users.elm`, rendered as `Elm::render('Admin.Users')`)
 
 Now use the `Elm` facade to render your Elm Page!
 
@@ -170,7 +350,7 @@ Route::get('/', function () {
 });
 ```
 
-> Hello, Example!
+> Hello, Welcome.
 
 # Some Elm knowledge required from here on
 
@@ -272,17 +452,16 @@ view : Model -> Html Msg
 view { props, state } =
     div [ class "container mx-auto m-4 p-4" ]
         [ text <| "Hello, " ++ props.name ++ "!" ]
-
 ```
 
 ## Share values with all your pages
 
-`AppServiceProvider.php`
+`app/Providers/AppServiceProvider.php`
 
 ```php
 use LoganHenson\Elm\Elm;
 ...
-    public function boot()
+    public function boot(): void
     {
         ...
 
@@ -295,6 +474,8 @@ use LoganHenson\Elm\Elm;
     }
 ...
 ```
+
+> Every page then receives a `user` prop (decode it with `nullable` in pages that use it).
 
 ## Routing
 
@@ -310,14 +491,17 @@ Route::get('/', function () {
 })->name('welcome');
 ```
 
-2. Run the `elm:routes` command to generate the Elm routes file
+2. Run the `elm:routes` command to generate the Elm routes file (run it again whenever your named routes change)
     > `resources/elm/laravel-elm-stuff/Routes.elm` (don't edit this manually)
 
 ```bash
 php artisan elm:routes
 ```
 
-3. Now we can send users to this page from Elm in our `update` handlers:
+> Each named route becomes a function returning its path: `Routes.welcome` is `"/"`, and a route with
+> parameters such as `password/reset/{token}` becomes `Routes.passwordReset : String -> String`.
+
+3. Now we can send users to this page from Elm in our `update` handlers (with `import Routes`):
     > Send the user to `/`
 
 ```elm
@@ -326,40 +510,52 @@ Routes.get Routes.welcome
 
 > Or even post some data to an endpoint:
 >
-> `POST /todos` with the `"description"` of `"add more docs"`
+> `POST /todos` with the `"description"` of `"add more docs"` (with `import Json.Encode`)
 
 ```elm
 Routes.post <|
-  Json.Encode.object
-      [ ( "url", Json.Encode.string <| Routes.todosStore )
-      , ( "data"
-        , Json.Encode.object
-              [ ( "description", Json.Encode.string "add more docs" )
-              ]
-        )
-      ]
+    Json.Encode.object
+        [ ( "url", Json.Encode.string Routes.todosStore )
+        , ( "data"
+          , Json.Encode.object
+                [ ( "description", Json.Encode.string "add more docs" )
+                ]
+          )
+        ]
 ```
+
+> `Routes.patch` takes the same shape, `Routes.delete` takes a url. A request to a route that doesn't
+> return an Elm page (a Blade page, an Inertia page...) does a normal full page load of it.
 
 ## Validation errors
 
 > The `errors` value is automatically passed to your Elm views, all you need to do is add it to your props to use it!
 
 ```elm
-import LaravelElm exposing (Errors)
+import Json.Decode exposing (Decoder, succeed)
+import Json.Decode.Pipeline exposing (required)
+import LaravelElm exposing (Errors, decodeErrors)
+
 
 type alias Props =
     { errors : Errors }
 
+
 decodeProps : Decoder Props
 decodeProps =
     succeed Props
-        |> required "errors" (dict (list string))
+        |> required "errors" decodeErrors
 ```
+
+> `Errors` is a `Dict String (List String)` of the messages for each field, e.g.
+> `Dict.get "email" props.errors`. When a request fails validation, only the `errors` prop is updated
+> (your page state is kept).
 
 ## Interop with Javascript
 
 > Talk back and forth from JS & Elm
-> `resources/elm/ExamplePage.elm`
+>
+> `resources/elm/pages/ExamplePage.elm`
 
 ```elm
 port module ExamplePage exposing (..)
@@ -370,25 +566,21 @@ port receiveEmail : (Value -> msg) -> Sub msg
 ...
 ```
 
-```js
-LaravelElm.register("ExamplePage", (page) => {
-    page.send("receiveEmail", localStorage.getItem("email"));
+> In a script loaded by your Elm root view, e.g. `resources/js/app.js` (which the default `app.blade.php`
+> loads; in an `elm.blade.php` add your script to its `@vite([...])`):
 
-    page.subscribe("saveEmail", (email) => {
-        localStorage.setItem("email", email);
+```js
+LaravelElm.register('ExamplePage', (page) => {
+    page.send('receiveEmail', localStorage.getItem('email'));
+
+    page.subscribe('saveEmail', (email) => {
+        localStorage.setItem('email', email);
     });
 });
 ```
 
-## Debugging
-
-### Laravel errors
-
-> Laravel errors are displayed in a modal on the frontend during development, using the same ignition error page that you are used to!
-
-### DevTools
-
-> Coming soon!
+> `register` runs your callback every time a page whose name starts with the given name is mounted
+> (`'*'` for every page). Subscribe to a page's ports with `subscribe` and send to them with `send`.
 
 ## Persistent scroll
 
@@ -401,7 +593,7 @@ To use it you need to:
 -   Import the components we need
 
 ```elm
-import LaravelElm exposing (Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
+import LaravelElm exposing (Page, Scroll, Viewports, decodeViewports, preserveScroll, receiveNewProps, saveScroll, setViewports)
 ```
 
 -   Add a `SaveScroll` msg
@@ -417,9 +609,7 @@ type Msg
 
 ```elm
 type alias Props =
-    { errors : Errors
-    , loading : Bool
-    , viewports : Viewports }
+    { viewports : Viewports }
 ```
 
 -   Add the decoder for the `viewports` prop
@@ -427,14 +617,14 @@ type alias Props =
 ```elm
 decodeProps : Decoder Props
 decodeProps =
-    Json.Decode.succeed Props
+    succeed Props
         |> required "viewports" decodeViewports
 ```
 
 -   Make sure we are using the saved viewport positions on mount
 
 ```elm
-main : Program Value (Result Error Model) Msg
+main : Page Model Msg
 main =
     LaravelElm.pageWithMountAndSubscriptions
         { decodeProps = decodeProps
@@ -464,6 +654,9 @@ update msg { props, state } =
 
                 Err _ ->
                     ( { props = props, state = state }, Cmd.none )
+
+        NoOp ->
+            ( { props = props, state = state }, Cmd.none )
 
         SaveScroll scroll ->
             ( { props = props, state = state }, saveScroll scroll )
@@ -502,16 +695,17 @@ decodeProps =
 
 > You can access the loading state in javascript via the `elm-loading` event
 >
-> Example using nprogress to show a top progress bar:
+> Example using nprogress (`npm install nprogress`) to show a top progress bar:
 >
 > (after 180ms, so it does not appear for fast connections)
 
 ```js
-import Nprogress from "nprogress";
+import Nprogress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 let loadingTimeout = null;
 Nprogress.configure({ showSpinner: false, minimum: 0.4 });
-window.addEventListener("elm-loading", function ({ detail: loading }) {
+window.addEventListener('elm-loading', function ({ detail: loading }) {
     clearTimeout(loadingTimeout);
 
     if (loading) {
@@ -522,17 +716,54 @@ window.addEventListener("elm-loading", function ({ detail: loading }) {
 });
 ```
 
+## Debugging
+
+> With `APP_DEBUG=true` (or `ELM_DEBUG=true`):
+>
+> -   Laravel errors from Elm requests are shown in a modal with Laravel's usual error page.
+> -   `dd()` output from Elm requests is shown in a modal too.
+> -   While `npm run dev` is running, saving an Elm file recompiles it and reloads the page automatically
+>     (compile errors are printed in the `npm run dev` output).
+
+### DevTools
+
+> Coming soon!
+
 ## Deploying
 
-### Updating assets
-
-> Build your assets for production using Vite:
+> Build your assets for production; this compiles your Elm pages with `--optimize` and
+> regenerates `resources/js/elm.js`:
 
 ```bash
 npm run build
 ```
 
+> `public/build` and `resources/js/elm.js` are build output (both are in `.gitignore`), so make sure your
+> deploy (or Docker image) runs `npm install` and `npm run build`. The Elm compiler runs on Linux
+> x64/arm64 (including Alpine images) as well as macOS and Windows.
+
+### Service worker (optional)
+
+```bash
+php artisan elm:sw
+```
+
+> After `npm run build`, generates `public/sw.js` (precaching your built assets with Workbox) and a
+> `public/manifest.json`. When `public/sw.js` exists, Laravel Elm registers it and reloads the page when a
+> new deploy is detected. Re-run it after every build.
+
 ## Configuration
+
+> Optional: publish `config/elm.php` to change these.
+
+```bash
+php artisan vendor:publish --tag=elm-config
+```
+
+| Option      | Default                        | Description                                                                          |
+| ----------- | ------------------------------ | ------------------------------------------------------------------------------------ |
+| `root_view` | `app` (env `ELM_ROOT_VIEW`)    | The Blade view Elm pages render into. It must contain `@elm` inside `<body>`.        |
+| `debug`     | `APP_DEBUG` (env `ELM_DEBUG`)  | Error/`dd()` modals, devtools messages and hot reloading.                            |
 
 ### Hot reloading
 
@@ -546,7 +777,20 @@ laravelElm({
 })
 ```
 
-> This disables the generation of debug code & does not start the hot reload server during `npm run dev`
+> This disables the generation of debug code & does not start the hot reload server (port 3030) during `npm run dev`
+
+## Commands
+
+| Command                   | Description                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `php artisan elm:install` | Install Laravel Elm into a new or existing app (safe to re-run)                              |
+| `php artisan elm:create`  | Create an Elm page: `elm:create Welcome`, `elm:create Admin.Users`                            |
+| `php artisan elm:routes`  | Generate `Routes.elm` from your named routes                                                 |
+| `php artisan elm:auth`    | Scaffold authentication pages, controllers and routes                                        |
+| `php artisan elm:sw`      | Generate a service worker for your built assets                                              |
+
+> Commands that would replace an existing file ask first; pass `--force` to `elm:install` / `elm:auth`
+> to replace without asking.
 
 ## Testing
 
@@ -581,6 +825,7 @@ $this->get(route('entries.index'))->assertJsonCount(1, 'props.entries');
 
 ## Example apps
 
+-   [GetCaloric](https://getcaloric.app) - a calorie tracker built with Laravel Elm
 -   [TodoMVC in Laravel Elm](https://github.com/loganhenson/laravel-elm-todomvc)
 
 ## Contributing

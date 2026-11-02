@@ -5,6 +5,8 @@ namespace LoganHenson\Elm;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 
 class Middleware
@@ -19,10 +21,7 @@ class Middleware
 
         if ($response instanceof Redirect && $response->getStatusCode() === 302 && $request->session()->has('errors')) {
             return new JsonResponse([
-                'errors' => session()
-                    ->get('errors')
-                    ->getBag('default')
-                    ->getMessages(),
+                'errors' => $this->defaultErrorMessages($request->session()->get('errors')),
             ], 200, [
                 'Vary' => 'Accept',
                 'X-Laravel-Elm' => 'true',
@@ -41,5 +40,25 @@ class Middleware
         }
 
         return $response;
+    }
+
+    /**
+     * The "default" bag's messages, whichever shape the session holds them in.
+     *
+     * With `'serialization' => 'json'` (the Laravel 13 skeleton default) the session
+     * is saved - converting the ViewErrorBag to a plain array - before this global
+     * middleware sees the response.
+     */
+    protected function defaultErrorMessages(mixed $errors): array|object
+    {
+        $messages = match (true) {
+            $errors instanceof ViewErrorBag => $errors->getBag('default')->getMessages(),
+            $errors instanceof MessageBag => $errors->getMessages(),
+            is_array($errors) => $errors['default']['messages'] ?? [],
+            default => [],
+        };
+
+        // Keep encoding as a JSON object (Elm decodes a Dict), even when empty.
+        return $messages === [] ? (object) [] : $messages;
     }
 }

@@ -25,6 +25,8 @@ class ElmServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/elm.php', 'elm');
+
         $this->app->singleton(ElmFacade::class);
 
         AliasLoader::getInstance()->alias('Elm', Elm::class);
@@ -36,6 +38,10 @@ class ElmServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->publishes([
+            __DIR__ . '/../config/elm.php' => config_path('elm.php'),
+        ], 'elm-config');
+
         Blade::directive('elm', function ($expression) {
             $path = $expression ?: "'resources/js/elm.js'";
             return "<?php echo app(\Illuminate\Foundation\Vite::class)({$path}); ?>" . '{!! $elm !!}';
