@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Auth;
+namespace LoganHenson\Elm\Auth;
 
 trait RedirectsUsers
 {

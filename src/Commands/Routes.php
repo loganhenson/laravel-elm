@@ -1,10 +1,10 @@
 <?php
 
-namespace Tightenco\Elm\Commands;
+namespace LoganHenson\Elm\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
-use Tightenco\Elm\Concerns\EnsureElmInitialized;
+use LoganHenson\Elm\Concerns\EnsureElmInitialized;
 
 class Routes extends Command
 {

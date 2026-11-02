@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Concerns;
+namespace LoganHenson\Elm\Concerns;
 
 trait EnsureElmInitialized
 {

@@ -1,6 +1,6 @@
 <?php
 
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 if (! function_exists('elm')) {
     function elm($page, $props = [])

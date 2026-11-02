@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\Attributes\Test;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateHttpResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
-use Tightenco\Elm\Response;
+use LoganHenson\Elm\Response;
 
 class MiddlewareTest extends TestCase
 {
@@ -134,5 +134,17 @@ class MiddlewareTest extends TestCase
         $this->assertStringContainsString('window.LaravelElm', $response->getContent());
         $this->assertStringContainsString('setPage(window.location.pathname', $response->getContent());
         $this->assertInstanceOf(IlluminateHttpResponse::class, $response);
+    }
+
+    #[Test]
+    public function props_can_not_break_out_of_the_inline_script()
+    {
+        View::addLocation(__DIR__ . '/../src/Fixtures');
+
+        $response = (new Response('User/Edit', ['name' => '</script><script>alert(1)</script>']))
+            ->toResponse(Request::create('/users/1'));
+
+        $this->assertStringNotContainsString('</script><script>alert(1)', $response->getContent());
+        $this->assertStringContainsString('\u003C\/script\u003E\u003Cscript\u003Ealert(1)', $response->getContent());
     }
 }

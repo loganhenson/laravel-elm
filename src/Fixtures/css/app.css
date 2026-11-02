@@ -1,7 +1,6 @@
-@tailwind base;
+@import 'tailwindcss';
 
-@tailwind components;
+/* Let Tailwind find the classes used in your Elm pages. */
+@source '../elm/**/*.elm';
 
 /** Your CSS Here **/
-
-@tailwind utilities;

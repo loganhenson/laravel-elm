@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 class HomeController extends Controller
 {

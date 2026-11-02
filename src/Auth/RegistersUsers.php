@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Auth;
+namespace LoganHenson\Elm\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 trait RegistersUsers
 {

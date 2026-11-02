@@ -1,10 +1,10 @@
 <?php
 
-namespace Tightenco\Elm\Commands;
+namespace LoganHenson\Elm\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
-use Tightenco\Elm\Concerns\EnsureElmInitialized;
+use LoganHenson\Elm\Concerns\EnsureElmInitialized;
 
 class Auth extends Command
 {

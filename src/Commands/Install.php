@@ -1,16 +1,16 @@
 <?php
 
-namespace Tightenco\Elm\Commands;
+namespace LoganHenson\Elm\Commands;
 
 use Illuminate\Console\Command;
-use Tightenco\Elm\Concerns\EnsureElmInitialized;
+use LoganHenson\Elm\Concerns\EnsureElmInitialized;
 
 class Install extends Command
 {
     use EnsureElmInitialized;
 
     protected $signature = 'elm:install {--force : Overwrite existing files}';
-    protected $description = 'Install laravel-elm & tailwind / scaffold webpack.mix.js';
+    protected $description = 'Install laravel-elm & tailwind / scaffold vite.config.js';
 
     /**
      * Credit: https://github.com/laravel/jetstream
@@ -45,73 +45,35 @@ class Install extends Command
         // Install NPM packages...
         $this->updateNodePackages(function ($packages) {
             return [
-                    "laravel-elm" => "^3.0.0",
-                    "tailwindcss" => "^2.0.0",
-                ] + $packages;
+                'laravel-elm' => '^4.1.0',
+                'laravel-vite-plugin' => '^3.1',
+                'tailwindcss' => '^4.3.0',
+                '@tailwindcss/vite' => '^4.3.0',
+                'vite' => '^8.0.0',
+            ] + $packages;
         });
 
-        $this->exportAppBladeView();
-        $this->exportAppCss();
-        $this->exportWebpackConfig();
-        $this->exportTailwindConfig();
+        $this->publish(__DIR__ . '/../Fixtures/app.blade.php', resource_path('views/app.blade.php'));
+        $this->publish(__DIR__ . '/../Fixtures/css/app.css', resource_path('css/app.css'));
+        $this->publish(__DIR__ . '/../Fixtures/vite.config.js', base_path('vite.config.js'));
 
-        $this->info('Laravel Elm fully installed & ready. Want an auth setup? Try `php artisan elm:auth`');
+        $this->info('Laravel Elm installed. Run `npm install`, then `npm run dev`.');
+        $this->info('Want an auth setup? Try `php artisan elm:auth`');
     }
 
-    protected function exportAppBladeView()
+    protected function publish(string $from, string $to)
     {
-        $view = resource_path('views/app.blade.php');
-        $putView = function () use ($view) {
-            file_put_contents($view, file_get_contents(__DIR__ . '/../Fixtures/app.blade.php'));
-        };
+        $name = basename($to);
 
-        if (file_exists($view) && ! $this->option('force')) {
-            if ($this->confirm("The [app.blade.php] file already exists. Do you want to replace it?")) {
-                $putView();
-            }
-        } else {
-            $putView();
+        if (file_exists($to) && ! $this->option('force')
+            && ! $this->confirm("The [{$name}] file already exists. Do you want to replace it?")) {
+            return;
         }
-    }
 
-    protected function exportAppCss()
-    {
-        file_put_contents(
-            resource_path('css/app.css'),
-            file_get_contents(__DIR__ . '/../Fixtures/css/app.css'),
-            FILE_APPEND
-        );
-    }
-
-    protected function exportWebpackConfig()
-    {
-        $webpackMixJs = base_path('webpack.mix.js');
-        $putWebpackMixJs = function () use ($webpackMixJs) {
-            copy(__DIR__ . '/../Fixtures/webpack.mix.js', base_path('webpack.mix.js'));
-        };
-
-        if (file_exists($webpackMixJs) && ! $this->option('force')) {
-            if ($this->confirm("The [webpack.mix.js] file already exists. Do you want to replace it?")) {
-                $putWebpackMixJs();
-            }
-        } else {
-            $putWebpackMixJs();
+        if (! is_dir(dirname($to))) {
+            mkdir(dirname($to), 0755, true);
         }
-    }
 
-    protected function exportTailwindConfig()
-    {
-        $tailwindConfig = base_path('tailwind.config.js');
-        $putTailwindConfig = function () use ($tailwindConfig) {
-            copy(__DIR__ . '/../Fixtures/tailwind.config.js', base_path('tailwind.config.js'));
-        };
-
-        if (file_exists($tailwindConfig) && ! $this->option('force')) {
-            if ($this->confirm("The [tailwind.config.js] file already exists. Do you want to replace it?")) {
-                $putTailwindConfig();
-            }
-        } else {
-            $putTailwindConfig();
-        }
+        copy($from, $to);
     }
 }

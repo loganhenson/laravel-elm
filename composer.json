@@ -1,27 +1,33 @@
 {
-  "name": "tightenco/laravel-elm",
+  "name": "loganhenson/laravel-elm",
   "description": "The Elm Laravel Platform",
   "license": "MIT",
   "keywords": [
     "laravel",
-    "elm"
+    "elm",
+    "vite"
   ],
+  "homepage": "https://github.com/loganhenson/laravel-elm",
+  "support": {
+    "issues": "https://github.com/loganhenson/laravel-elm/issues",
+    "source": "https://github.com/loganhenson/laravel-elm"
+  },
   "authors": [
     {
       "name": "Logan Henson",
-      "email": "logan@tighten.co"
+      "email": "logan@loganhenson.com"
     }
   ],
   "require": {
-    "php": "^8.4 || ^8.5",
-    "laravel/framework": "^12.0"
+    "php": "^8.4",
+    "laravel/framework": "^13.0"
   },
   "require-dev": {
-    "orchestra/testbench": "^10.0"
+    "orchestra/testbench": "^11.0"
   },
   "autoload": {
     "psr-4": {
-      "Tightenco\\Elm\\": "src/"
+      "LoganHenson\\Elm\\": "src/"
     },
     "files": [
       "src/helpers.php"
@@ -29,17 +35,22 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tightenco\\Elm\\Tests\\": "tests/"
+      "LoganHenson\\Elm\\Tests\\": "tests/"
     }
   },
   "extra": {
     "laravel": {
       "aliases": {
-        "Elm": "Tightenco\\Elm\\ElmFacade"
+        "Elm": "LoganHenson\\Elm\\Elm"
       },
       "providers": [
-        "Tightenco\\Elm\\ElmServiceProvider"
+        "LoganHenson\\Elm\\ElmServiceProvider"
       ]
     }
-  }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

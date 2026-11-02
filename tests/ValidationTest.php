@@ -1,12 +1,12 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use Closure;
 use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 class ValidationTest extends TestCase
 {

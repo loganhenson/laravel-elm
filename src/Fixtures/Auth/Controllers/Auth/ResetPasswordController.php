@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Tightenco\Elm\Auth\ResetsPasswords;
+use LoganHenson\Elm\Auth\ResetsPasswords;
 
 class ResetPasswordController extends Controller
 {

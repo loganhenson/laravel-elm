@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Tightenco\Elm\Auth\RegistersUsers;
+use LoganHenson\Elm\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {

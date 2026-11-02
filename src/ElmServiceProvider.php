@@ -1,17 +1,17 @@
 <?php
 
-namespace Tightenco\Elm;
+namespace LoganHenson\Elm;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Tightenco\Elm\Commands\Auth;
-use Tightenco\Elm\Commands\Create;
-use Tightenco\Elm\Commands\Install;
-use Tightenco\Elm\Commands\Routes;
-use Tightenco\Elm\Commands\SW;
+use LoganHenson\Elm\Commands\Auth;
+use LoganHenson\Elm\Commands\Create;
+use LoganHenson\Elm\Commands\Install;
+use LoganHenson\Elm\Commands\Routes;
+use LoganHenson\Elm\Commands\SW;
 
 class ElmServiceProvider extends ServiceProvider
 {
@@ -25,9 +25,7 @@ class ElmServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton('Elm', function ($app) {
-            return new Elm;
-        });
+        $this->app->singleton(ElmFacade::class);
 
         AliasLoader::getInstance()->alias('Elm', Elm::class);
 

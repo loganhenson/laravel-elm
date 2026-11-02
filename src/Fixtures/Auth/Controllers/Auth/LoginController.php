@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Tightenco\Elm\Auth\AuthenticatesUsers;
+use LoganHenson\Elm\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {

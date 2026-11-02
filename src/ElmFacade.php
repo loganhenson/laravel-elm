@@ -1,10 +1,10 @@
 <?php
 
-namespace Tightenco\Elm;
+namespace LoganHenson\Elm;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
-use Tightenco\Elm\Auth\AuthRouteMethods;
+use LoganHenson\Elm\Auth\AuthRouteMethods;
 
 class ElmFacade
 {

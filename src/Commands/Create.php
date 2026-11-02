@@ -1,10 +1,10 @@
 <?php
 
-namespace Tightenco\Elm\Commands;
+namespace LoganHenson\Elm\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Tightenco\Elm\Concerns\EnsureElmInitialized;
+use LoganHenson\Elm\Concerns\EnsureElmInitialized;
 
 class Create extends Command
 {

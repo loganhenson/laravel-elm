@@ -11,7 +11,7 @@ jobs:
   test:
     strategy:
       matrix:
-        php: ['8.4']
+        php: ['8.4', '8.5']
         os: [ubuntu-latest, macos-latest]
         dependency-version: [prefer-lowest, prefer-stable]
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm;
+namespace LoganHenson\Elm;
 
 use Closure;
 use Illuminate\Http\JsonResponse;

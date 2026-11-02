@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use Illuminate\Support\Facades\Blade;
 use PHPUnit\Framework\Attributes\Test;

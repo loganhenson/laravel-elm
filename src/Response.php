@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm;
+namespace LoganHenson\Elm;
 
 use Closure;
 use Illuminate\Contracts\Support\Responsable;
@@ -49,6 +49,18 @@ class Response implements Responsable
         }
 
         return ResponseFactory::view('app', $this->viewData + ['elm' => $this->make($props)]);
+    }
+
+    /**
+     * Encode a value as JSON that is safe to embed inside an inline <script>
+     * (e.g. a prop containing "</script>" can not break out of the tag).
+     */
+    protected function toScriptJson(mixed $value): string
+    {
+        return json_encode(
+            $value,
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+        );
     }
 
     /**
@@ -452,7 +464,7 @@ class Response implements Responsable
             })
 
             window.addEventListener('load', () => {
-              setPage(window.location.pathname + window.location.search, "<?= $this->page ?>", <?= json_encode($props) ?>)
+              setPage(window.location.pathname + window.location.search, <?= $this->toScriptJson($this->page) ?>, <?= $this->toScriptJson($props) ?>)
             })
           })()
         </script>

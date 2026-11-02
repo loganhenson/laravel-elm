@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import laravelElm from 'laravel-elm/vite';
+import tailwindcss from '@tailwindcss/vite';
+import laravelElm from 'laravel-elm';
 
 export default defineConfig({
     plugins: [
@@ -12,8 +13,9 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        tailwindcss(),
         laravelElm({
-            debug: true, // Enable debug mode for development
+            debug: true,
         }),
     ],
 });

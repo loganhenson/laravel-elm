@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
@@ -8,13 +8,13 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as Orchestra;
 use PHPUnit\Framework\Attributes\Test;
-use Tightenco\Elm\Elm;
-use Tightenco\Elm\ElmServiceProvider;
-use Tightenco\Elm\Middleware;
+use LoganHenson\Elm\Elm;
+use LoganHenson\Elm\ElmServiceProvider;
+use LoganHenson\Elm\Middleware;
 
 abstract class TestCase extends Orchestra
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         

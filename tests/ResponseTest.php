@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use Illuminate\Foundation\Auth\User;
 use PHPUnit\Framework\Attributes\Test;

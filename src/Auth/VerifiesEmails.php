@@ -1,12 +1,12 @@
 <?php
 
-namespace Tightenco\Elm\Auth;
+namespace LoganHenson\Elm\Auth;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 trait VerifiesEmails
 {

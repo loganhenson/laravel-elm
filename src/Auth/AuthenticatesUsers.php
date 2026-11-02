@@ -1,12 +1,12 @@
 <?php
 
-namespace Tightenco\Elm\Auth;
+namespace LoganHenson\Elm\Auth;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 
 trait AuthenticatesUsers
 {

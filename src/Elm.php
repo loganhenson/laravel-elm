@@ -1,6 +1,6 @@
 <?php
 
-namespace Tightenco\Elm;
+namespace LoganHenson\Elm;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getShared($key = null)
  * @method static array authRoutes()
  *
- * @see \Tightenco\Elm\ElmFacade
+ * @see \LoganHenson\Elm\ElmFacade
  */
 class Elm extends Facade
 {

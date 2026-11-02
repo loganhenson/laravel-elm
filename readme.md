@@ -1,8 +1,9 @@
-![Laravel Elm logo](https://raw.githubusercontent.com/tightenco/laravel-elm/master/laravel-elm-banner.png)
+![Laravel Elm logo](https://raw.githubusercontent.com/loganhenson/laravel-elm/main/laravel-elm-banner.png)
 
 <hr>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/tightenco/laravel-elm.svg?style=flat-square)](https://packagist.org/packages/tightenco/laravel-elm)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/loganhenson/laravel-elm.svg?style=flat-square)](https://packagist.org/packages/loganhenson/laravel-elm)
+[![Tests](https://github.com/loganhenson/laravel-elm/actions/workflows/run-tests.yml/badge.svg)](https://github.com/loganhenson/laravel-elm/actions/workflows/run-tests.yml)
 
 # A Platform for Elm on Laravel
 
@@ -14,13 +15,15 @@ This package makes it seamless.
 
 ## Requirements
 
--   Laravel 12.x+
--   PHP 8.4 / 8.5
--   Vite
+-   Laravel 13.x
+-   PHP 8.4+
+-   Vite 7 / 8 (Laravel 13 ships Vite 8)
+-   Tailwind CSS 4.3+ (for the scaffolding)
 
 ## Docs
 
 -   [Installation](#installation)
+-   [Upgrading from tightenco/laravel-elm](#upgrading-from-tightencolaravel-elm)
 -   [Creating a page](#Creating-a-page)
 
 > Some Elm knowledge required from here on!
@@ -47,24 +50,29 @@ This package makes it seamless.
 
 ## Installation
 
--   Ensure you have a Laravel 12+ app ready (https://laravel.com/docs)
+-   Ensure you have a Laravel 13 app ready (https://laravel.com/docs)
 -   Add the laravel-elm package
 
 ```
-composer require tightenco/laravel-elm
+composer require loganhenson/laravel-elm
 ```
 
--   Install the npm package
+-   Scaffold Vite, Tailwind & Elm
 
 ```
-npm install --save-dev laravel-elm
+php artisan elm:install
 ```
 
--   Configure Vite in `vite.config.js`:
+> This adds `laravel-elm`, `tailwindcss@^4.3`, `@tailwindcss/vite@^4.3`, `vite@^8` & `laravel-vite-plugin@^3.1`
+> to your `package.json`, and publishes `vite.config.js`, `resources/css/app.css`, `resources/views/app.blade.php`
+> and the `resources/elm` directory (pass `--force` to overwrite without prompting).
+
+The published `vite.config.js` looks like this:
 
 ```javascript
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import tailwindcss from '@tailwindcss/vite';
 import laravelElm from 'laravel-elm';
 
 export default defineConfig({
@@ -77,6 +85,7 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        tailwindcss(),
         laravelElm({
             debug: true,
         }),
@@ -84,11 +93,14 @@ export default defineConfig({
 });
 ```
 
--   Install the new npm dependencies
+-   Install the npm dependencies
 
 ```
 npm install
 ```
+
+> **npm 12+:** dependency install scripts are blocked by default, and the `elm` npm package needs its
+> install script to download the Elm compiler. Allow it once with `npm install-scripts approve elm`.
 
 > Optional Auth Scaffolding (Tailwind)
 
@@ -111,12 +123,34 @@ php artisan elm:auth
 npm run dev
 ```
 
-> And open your local site! (`valet link && valet open`)
+> And open your local site! (`php artisan serve`, Herd, Valet, ...)
 > Try going to `/login` or `/register`!
 
 > General assets note!
 >
 > You can add `public/build` to your `.gitignore` if you wish to avoid committing these built files!
+
+## Upgrading from tightenco/laravel-elm
+
+`tightenco/laravel-elm` is abandoned; this package is its continuation (same author, same repo).
+
+-   Swap the package:
+
+```
+composer remove tightenco/laravel-elm
+composer require loganhenson/laravel-elm
+```
+
+-   Rename the PHP namespace `Tightenco\Elm` to `LoganHenson\Elm` in your app, e.g.
+
+```
+grep -rl 'Tightenco\\Elm' app routes tests | xargs sed -i.bak 's/Tightenco\\Elm/LoganHenson\\Elm/g'
+```
+
+> (the `Elm` facade alias is unchanged, so `Elm::render(...)` in routes keeps working)
+
+-   Bump the npm package: `npm install --save-dev laravel-elm@^4.1` (adds Vite 8 support)
+-   Requirements are now Laravel 13 and PHP 8.4+
 
 ## Creating a page
 
@@ -246,7 +280,7 @@ view { props, state } =
 `AppServiceProvider.php`
 
 ```php
-use Tightenco\Elm\Elm;
+use LoganHenson\Elm\Elm;
 ...
     public function boot()
     {
@@ -531,9 +565,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->withHeaders(['X-Laravel-Elm' => 'true']);
@@ -558,12 +590,13 @@ To get started contributing to Laravel Elm, check out [the contribution guide](C
 ## Credits
 
 -   [Logan Henson](https://twitter.com/logan_j_henson)
--   [All contributors](https://github.com/tighten/laravel-elm/contributors)
+-   [All contributors](https://github.com/loganhenson/laravel-elm/contributors)
+-   Originally built at [Tighten](https://tighten.com)
 
 ## Security
 
-If you discover any security related issues, please email <hello@tighten.co> instead of using the issue tracker.
+If you discover any security related issues, please email <logan@loganhenson.com> instead of using the issue tracker.
 
 ## License
 
-[View the license](https://github.com/tightenco/laravel-elm/blob/master/LICENSE) for this repo.
+[View the license](https://github.com/loganhenson/laravel-elm/blob/main/LICENSE) for this repo.

@@ -1,9 +1,9 @@
 <?php
 
-namespace Tightenco\Elm\Tests;
+namespace LoganHenson\Elm\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
-use Tightenco\Elm\Commands\Routes;
+use LoganHenson\Elm\Commands\Routes;
 
 class RoutesTest extends TestCase
 {
