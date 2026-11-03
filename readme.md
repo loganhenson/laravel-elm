@@ -727,7 +727,16 @@ window.addEventListener('elm-loading', function ({ detail: loading }) {
 
 ### DevTools
 
-> Coming soon!
+> [Laravel Elm DevTools](https://github.com/loganhenson/laravel-elm-devtools) is a Chrome DevTools panel that shows
+> the current page's props, its live state (as Elm values, updated after every `Msg`) and its ports.
+>
+> 1. Download the zip from the
+>    [latest release](https://github.com/loganhenson/laravel-elm-devtools/releases/latest) and unzip it.
+> 2. In `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the unzipped folder.
+> 3. Run `composer run dev`, open a page and select the **Laravel Elm** panel in DevTools.
+>
+> It works in debug mode (`APP_DEBUG=true` or `ELM_DEBUG=true`). State is only sent while the Vite dev server is
+> running; production builds compile it out.
 
 ## Deploying
 
