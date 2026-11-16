@@ -16,7 +16,7 @@ This package makes it seamless.
 ## Requirements
 
 -   Laravel 13.x
--   PHP 8.4+
+-   PHP 8.5+
 -   Node.js 20.19+ with Vite 7 or 8 (Laravel 13 ships Vite 8; `vite-plus` is supported too)
 -   Elm 0.19.3 (installed for you by the `laravel-elm` npm package)
 -   Tailwind CSS 4.3+ for the scaffolded pages (optional, see [Tailwind alongside existing CSS](#tailwind-alongside-existing-css))
@@ -301,6 +301,11 @@ button [ class "btn btn-primary tw:ml-4 tw:hover:opacity-50" ] [ text "Save" ]
 
 ## Upgrading
 
+### From 6.1
+
+-   7.0 requires PHP 8.5+ (PHP 8.4 is no longer supported). Upgrade PHP, then
+    `composer require loganhenson/laravel-elm:^7.0`. There are no code changes.
+
 ### From 6.0
 
 -   `composer update loganhenson/laravel-elm` and `npm install --save-dev laravel-elm@^4.1.1`
@@ -329,7 +334,7 @@ grep -rl 'Tightenco\\Elm' app routes tests | xargs sed -i.bak 's/Tightenco\\Elm/
 
 > (the `Elm` facade alias is unchanged, so `Elm::render(...)` in routes keeps working)
 
--   Then follow [From 6.0](#from-60) above. Requirements are now Laravel 13 and PHP 8.4+.
+-   Then follow [From 6.0](#from-60) and [From 6.1](#from-61) above. Requirements are now Laravel 13 and PHP 8.5+.
 
 ## Creating a page
 
